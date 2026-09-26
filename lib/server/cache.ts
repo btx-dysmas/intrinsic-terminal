@@ -11,6 +11,8 @@ export function memo<T>(key: string, ttlSeconds: number, load: () => Promise<T>)
   return value;
 }
 
+export const forget = (key: string) => store.delete(key);
+
 export const HOUR = 3600;
 
 /** Cache-Control for JSON responses: fresh for `fresh` seconds at the CDN, then served stale while refreshing. */

@@ -1,8 +1,9 @@
 // FRED macroeconomic series, the Treasury par yield curve and Federal Reserve press releases.
-import { HOUR, memo } from "./cache";
+import { forget, HOUR, memo } from "./cache";
 import { rss } from "./yahoo";
 
-const KEY = process.env.FRED_API_KEY ?? "";
+// Trimmed: a stray space or newline pasted into a dashboard makes FRED reject the key.
+const KEY = (process.env.FRED_API_KEY ?? "").trim();
 const START = "2007-01-01"; // long enough to include the 2008 and 2020 recessions in the regime history
 
 export const SERIES: [id: string, title: string, units: string, transform?: "yoy"][] = [
@@ -20,7 +21,10 @@ export const SERIES: [id: string, title: string, units: string, transform?: "yoy
 async function observations(id: string): Promise<[string, number][]> {
   const q = new URLSearchParams({ series_id: id, api_key: KEY, file_type: "json", observation_start: START });
   const r = await fetch(`https://api.stlouisfed.org/fred/series/observations?${q}`, { cache: "no-store" });
-  if (!r.ok) throw new Error(`FRED ${id}: HTTP ${r.status}`);
+  if (!r.ok) {
+    const why = await r.json().then((j) => j.error_message).catch(() => null);
+    throw new Error(why ? `FRED: ${why}` : `FRED ${id}: HTTP ${r.status}`);
+  }
   const data = await r.json();
   return (data.observations ?? []).filter((o: any) => o.value !== ".").map((o: any) => [o.date, Number(o.value)]);
 }
@@ -71,8 +75,8 @@ async function treasuryCurve() {
   return { tenors, latest: pick(latest), monthAgo: pick(nearest(30)), yearAgo: pick(nearest(365)) };
 }
 
-export function macro() {
-  return memo("macro", 6 * HOUR, async () => {
+export async function macro() {
+  const m = await memo("macro", 6 * HOUR, async () => {
     const series: Record<string, any> = {};
     if (KEY) {
       await Promise.all(
@@ -94,4 +98,6 @@ export function macro() {
     const tenYear = curve?.latest?.yields[8] ?? series.DGS10?.latest?.[1] ?? null;
     return { keyConfigured: !!KEY, available: Object.values(series).some((s) => s.obs), series, curve, fed, riskFree: tenYear != null ? tenYear / 100 : null };
   });
+  if (!m.available) forget("macro"); // retry on the next request instead of holding a failure for hours
+  return m;
 }

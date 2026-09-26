@@ -53,7 +53,7 @@ export default function Macro() {
             <div className="px-5 pb-5 text-ink-2">
               {m && !m.keyConfigured
                 ? <>Set <code>FRED_API_KEY</code> in <code>.env.local</code> (or in the Vercel project settings). Keys are free and issued instantly at <a className="text-accent underline" href="https://fred.stlouisfed.org/docs/api/api_key.html" target="_blank" rel="noopener noreferrer">fred.stlouisfed.org</a>. Until then, valuations use a 4.25% risk-free rate.</>
-                : err ?? "FRED did not respond. Try again shortly."}
+                : err ?? (Object.values(s).find((x: any) => x.error) as any)?.error ?? "FRED did not respond. Try again shortly."}
             </div>
           </Card>
         )}

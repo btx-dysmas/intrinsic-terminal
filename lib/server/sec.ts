@@ -2,7 +2,7 @@
 import { HOUR, memo, NotFound } from "./cache";
 
 // The SEC asks every automated client to identify itself with a name and contact email.
-const UA = process.env.SEC_USER_AGENT || "Intrinsic Research Terminal research@example.com";
+const UA = process.env.SEC_USER_AGENT?.trim() || "Intrinsic Research Terminal research@example.com";
 
 // SEC fair-access policy: at most 10 requests per second.
 let queue: Promise<void> = Promise.resolve();
