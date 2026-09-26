@@ -2,6 +2,8 @@
 
 **An equity research terminal for any U.S. public company, built on free public data.**
 
+**Live demo:** https://intrinsic-terminal.vercel.app/
+
 Type a ticker and Intrinsic pulls the company's filings from the SEC, market data from Yahoo Finance and macro data from the Federal Reserve. Within a few seconds it has built normalized financial statements, a discounted cash flow model, a peer comparison, risk and technical analysis, and a written research note you can export as a PDF. Everything runs on GitHub and Vercel's free tier. There's no database, no paid API and no AI model behind it.
 
 ![Company overview](docs/screenshots/overview.png)
