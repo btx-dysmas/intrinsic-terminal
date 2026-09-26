@@ -39,6 +39,16 @@ Individual investors usually have to switch between several disconnected sites t
 
 I built Intrinsic to find out whether one platform, powered only by public data, could offer professional-grade research tools while staying free for students and individual investors.
 
+## Project timeline
+
+| When | What happened |
+|---|---|
+| **December 2024** | Started Intrinsic in Visual Studio Code as a two-year personal project |
+| **2025** | Paused, then kept tweaking it: new features, data experiments and early versions of the valuation models |
+| **2026** | Rebuilt it from scratch as a full-stack Next.js and TypeScript platform on free infrastructure, and published it on GitHub and Vercel |
+
+The gap is real: I set the project aside, came back to it, and rebuilt it with a better architecture once I knew what I wanted it to be. The [development log](docs/DEVLOG.md) covers the rebuild in detail.
+
 ## About me
 
 Hi, I'm **Noah Williams**. Online I go by **Dysmas Anastasiou**. I'm 18, and I built this by myself.
