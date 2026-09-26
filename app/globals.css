@@ -1,0 +1,440 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light palette. Chart hues validated for CVD separation and contrast against the card surface. */
+:root {
+  color-scheme: light;
+  --ground: #eef1f6;
+  --card: #ffffff;
+  --card-2: #f6f8fb;
+  --line: #e2e6ee;
+  --line-2: #cdd3de;
+  --ink: #1a2233;
+  --ink-2: #4b5568;
+  --ink-3: #737d91;
+  --ink-4: #a9b1c0;
+  --chrome: #0f1a30;
+  --chrome-2: #16233f;
+  --chrome-hi: #1f3157;
+  --chrome-ink: #c3cde2;
+  --chrome-seg: #2f5fbf;
+  --accent: #0b7f7a;
+  --accent-soft: #e3f3f2;
+  --input: #1b4fc4;
+  --c0: #b4bac6;
+  --c1: #2f5fbf;
+  --c2: #0e9b95;
+  --c3: #c27812;
+  --c4: #c23f68;
+  --pos: #1e7f4e;
+  --neg: #c0392b;
+  --warn: #a8690f;
+  --pos-soft: #e5f3ec;
+  --neg-soft: #fbe9e7;
+  --warn-soft: #fbf1de;
+}
+.dark {
+  color-scheme: dark;
+  --ground: #0b111d;
+  --card: #131b2b;
+  --card-2: #1a2436;
+  --line: #243048;
+  --line-2: #33405a;
+  --ink: #e3e8f1;
+  --ink-2: #aeb8ca;
+  --ink-3: #8a96ab;
+  --ink-4: #5b6780;
+  --chrome: #070c17;
+  --chrome-2: #0d1526;
+  --chrome-hi: #1a2745;
+  --chrome-ink: #a9b6cf;
+  --chrome-seg: #34488a;
+  --accent: #35c2bb;
+  --accent-soft: #12302f;
+  --input: #8fb1ff;
+  --c0: #4a5468;
+  --c1: #6a80e3;
+  --c2: #1fa395;
+  --c3: #c4862a;
+  --c4: #cf5f83;
+  --pos: #4cc38a;
+  --neg: #f07a70;
+  --warn: #e0ae4b;
+  --pos-soft: #10291c;
+  --neg-soft: #34181a;
+  --warn-soft: #2e2412;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-chrome: var(--chrome);
+  --color-chrome-2: var(--chrome-2);
+  --color-chrome-hi: var(--chrome-hi);
+  --color-chrome-ink: var(--chrome-ink);
+  --color-chrome-seg: var(--chrome-seg);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-input: var(--input);
+  --color-c0: var(--c0);
+  --color-c1: var(--c1);
+  --color-c2: var(--c2);
+  --color-c3: var(--c3);
+  --color-c4: var(--c4);
+  --color-pos: var(--pos);
+  --color-neg: var(--neg);
+  --color-warn: var(--warn);
+  --color-pos-soft: var(--pos-soft);
+  --color-neg-soft: var(--neg-soft);
+  --color-warn-soft: var(--warn-soft);
+  --font-sans: var(--font-plex), "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+}
+
+html,
+body {
+  background: var(--ground);
+  color: var(--ink);
+}
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+@layer components {
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    min-width: 0;
+    box-shadow: 0 1px 2px rgb(15 26 48 / 0.04);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .card-sub {
+    color: var(--ink-3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+  .section-head {
+    color: var(--accent);
+    font-size: 17px;
+    font-weight: 600;
+    margin: 10px 2px -2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-head::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  /* compact labeled filter control, used in the filter strip */
+  .fsel {
+    appearance: none;
+    height: 30px;
+    min-width: 120px;
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+    background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23737d91'/%3E%3C/svg%3E") no-repeat right 9px center;
+    padding: 0 28px 0 9px;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .flabel {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-bottom: 3px;
+  }
+  table.t {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+  }
+  .t th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-2);
+    text-align: right;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--card);
+    vertical-align: bottom;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+  }
+  .t th:first-child {
+    text-align: left;
+  }
+  .t th.chip-h {
+    text-align: center;
+    color: #fff;
+    border-bottom: 0;
+    border-left: 2px solid var(--card);
+  }
+  .t td {
+    padding: 8px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    color: var(--ink);
+  }
+  .t td:first-child {
+    text-align: left;
+  }
+  .t.dense {
+    font-size: 13.25px;
+  }
+  .t.dense td {
+    padding: 6px 11px;
+  }
+  .t.dense th {
+    padding: 7px 11px;
+    font-size: 11.5px;
+  }
+  .t tr.tot td {
+    font-weight: 700;
+    border-top: 1px solid var(--line-2);
+  }
+  .t tr.sub td {
+    color: var(--ink-3);
+    font-size: 0.92em;
+  }
+  .t tr.sub td:first-child {
+    padding-left: 26px;
+    font-style: italic;
+  }
+  .t tr.hl td {
+    background: var(--accent-soft);
+  }
+  .t tr.sec td {
+    background: var(--card-2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-align: left;
+  }
+  .t tr.click {
+    cursor: pointer;
+  }
+  .t tr.click:hover td {
+    background: var(--card-2);
+  }
+  .t td.l {
+    text-align: left;
+  }
+  .t td.c {
+    text-align: center;
+  }
+  .t .sticky-col {
+    position: sticky;
+    left: 0;
+    background: var(--card);
+    z-index: 1;
+  }
+  .t td.base {
+    outline: 2px solid var(--c1);
+    outline-offset: -2px;
+    font-weight: 700;
+  }
+  .t td.up {
+    background: var(--pos-soft);
+  }
+  .t td.dn {
+    background: var(--neg-soft);
+  }
+  .kv {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 2px 20px 14px;
+  }
+  .kv > div {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .kv > div:nth-child(odd) {
+    color: var(--ink-2);
+  }
+  .kv > div:nth-child(even) {
+    text-align: right;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .kv > div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    padding: 10px 20px 14px;
+    line-height: 1.5;
+  }
+  .seg {
+    display: inline-flex;
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .seg button {
+    border-right: 1px solid var(--line-2);
+    background: var(--card);
+    padding: 4px 11px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .seg button:last-child {
+    border-right: 0;
+  }
+  .seg button.on {
+    background: var(--chrome-2);
+    color: #fff;
+  }
+  .dark .seg button.on {
+    background: var(--c1);
+  }
+  .btn {
+    border: 1px solid var(--line-2);
+    background: var(--card);
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .dark .btn.primary {
+    color: #06201f;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .chip {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .inp {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 92px;
+    gap: 7px 12px;
+    align-items: center;
+    padding: 4px 20px 18px;
+  }
+  .inp label {
+    font-size: 13.5px;
+    color: var(--ink);
+  }
+  .inp label small {
+    display: block;
+    color: var(--ink-3);
+    font-size: 11.5px;
+  }
+  .inp input[type="number"] {
+    width: 100%;
+    text-align: right;
+    border: 1px solid var(--line-2);
+    border-radius: 3px;
+    padding: 5px 8px;
+    color: var(--input);
+    font-weight: 600;
+    background: var(--card-2);
+  }
+  .inp h4 {
+    grid-column: 1/-1;
+    margin: 12px 0 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .doc {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    line-height: 1.65;
+    padding: 4px 24px 22px;
+    max-width: 78ch;
+    color: var(--ink);
+  }
+  .doc h2 {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 22px 0 6px;
+    font-weight: 700;
+  }
+  .doc h2:first-child {
+    margin-top: 4px;
+  }
+  .doc p {
+    margin: 0 0 11px;
+  }
+  .doc ul {
+    margin: 0 0 11px;
+    padding-left: 22px;
+    list-style: disc;
+  }
+  .doc li {
+    margin-bottom: 5px;
+  }
+}
+
+@keyframes ld {
+  to {
+    left: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ld-bar {
+    animation: none !important;
+    left: 0 !important;
+    width: 100% !important;
+  }
+}
