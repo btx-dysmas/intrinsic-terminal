@@ -1,14 +1,22 @@
 # Intrinsic
 
-**An equity research terminal for any U.S. public company, built on free public data.**
+**Intrinsic recreates core equity research workflows from professional financial terminals using only public data and free infrastructure.**
 
-**Live demo:** https://intrinsic-terminal.vercel.app/
+**Live demo:** [intrinsic-terminal.vercel.app](https://intrinsic-terminal.vercel.app/)
 
-Type a ticker and Intrinsic pulls the company's filings from the SEC, market data from Yahoo Finance and macro data from the Federal Reserve. Within a few seconds it has built normalized financial statements, a discounted cash flow model, a peer comparison, risk and technical analysis, and a written research note you can export as a PDF. Everything runs on GitHub and Vercel's free tier. There's no database, no paid API and no AI model behind it.
+Intrinsic is a full-stack equity research and valuation platform. Type any U.S. ticker and it pulls the company's filings from the SEC, market data from Yahoo Finance and macroeconomic data from the Federal Reserve. Within seconds it builds normalized financial statements, a discounted cash flow model with bull, base and bear cases, a peer comparison, risk and technical analysis, insider trading activity, and a written research note you can export as a PDF.
+
+Instead of relying on proprietary terminals or paid APIs, Intrinsic uses transparent methods and publicly available sources. It runs entirely on GitHub and Vercel's free tier, with no database, no paid data and no AI model.
 
 ![Company overview](docs/screenshots/overview.png)
 
 ---
+
+## Why this project exists
+
+Individual investors usually have to switch between several disconnected sites to see a company's financial statements, market data, valuation, economic backdrop and insider activity. Professionals get all of that in one place, from terminals that cost tens of thousands of dollars a year.
+
+I built Intrinsic to find out whether one platform, powered only by public data, could offer professional-grade research tools while staying free for students and individual investors.
 
 ## About me
 
@@ -16,7 +24,19 @@ Hi, I'm **Noah Williams**. Online I go by **Dysmas Anastasiou**. I'm 18, and I b
 
 My high school transcript doesn't tell the whole story. I left the group home system in 2022. For a long time after that I was dealing with depression, anxiety and symptoms close to schizophrenia, and my grades went down with me. I didn't want that transcript to be the last word on what I can do, so I decided to build real things and use them to earn a place at a university.
 
-Intrinsic is the biggest of those projects. I wanted it to look and work like the tools analysts use at Bloomberg, Capital IQ or Morningstar. I also wanted it to be honest about where every number comes from.
+Intrinsic is the biggest of those projects. I built it to explore software engineering, financial analysis and the infrastructure behind wealth management, and I wanted it to be honest about where every number comes from.
+
+---
+
+## Technical highlights
+
+- **Normalized SEC XBRL filings into a common data model.** Raw tagged facts become annual, quarterly and trailing-twelve-month statements, with year-to-date differencing, tag fallbacks, restatement handling and merged predecessor filers.
+- **Parsed SEC Form 4 filings** into insider transactions, separating open-market buying and selling from compensation events.
+- **Built a valuation engine that runs in the browser:** an unlevered DCF for operating companies and a residual income model for banks and insurers. It uses a CAPM discount rate from the live 10-year Treasury yield, scenario analysis and sensitivity grids.
+- **Wrote a deterministic research-note generator** and a six-factor Buy/Hold/Sell rating. Every sentence is built from a computed figure.
+- **Implemented a Monte Carlo retirement simulator** with correlated asset returns (Cholesky factorization, seeded random numbers) and a portfolio risk engine (Sharpe, Sortino, VaR, CVaR, risk contribution).
+- **Classified economic regimes** from GDP, inflation, the Sahm rule and the yield curve, and backtested the rules quarterly since 2008.
+- **Designed a serverless architecture on free infrastructure,** with CDN caching, in-memory request deduplication, an SEC rate limiter and a daily GitHub Actions data refresh.
 
 ---
 
@@ -25,19 +45,17 @@ Intrinsic is the biggest of those projects. I wanted it to look and work like th
 | | |
 |---|---|
 | **Company analysis** | Search any SEC-registered U.S. ticker. Get the overview, 52-week range, analyst consensus, earnings dates and surprises, and a company profile. |
-| **Financial statements** | Income statement, balance sheet and cash flow built from raw XBRL filings. Annual and quarterly, plus trailing twelve months. Restatements replace original figures. |
+| **Financial statements** | Income statement, balance sheet and cash flow built from raw XBRL filings. Annual and quarterly, plus trailing twelve months. |
 | **Ratio analysis** | Profitability, returns, liquidity, leverage, efficiency and per-share trends. Nonsense values (such as margins of -50,000% for pre-revenue companies) are flagged instead of plotted. |
-| **Valuation model** | Unlevered DCF for operating companies and a residual income model for banks and insurers. Bull, base and bear scenarios, sensitivity grids, a margin-of-safety slider, and historical P/E, EV/EBITDA and P/S bands. Every assumption can be edited. |
-| **Comparable companies** | Peer multiples and operating metrics against a peer set you can change. |
+| **Valuation model** | DCF and residual income models with bull, base and bear scenarios, sensitivity grids, a margin-of-safety slider, and historical P/E, EV/EBITDA and P/S bands. Every assumption can be edited. |
+| **Peer benchmarking** | Peer multiples and operating metrics against a peer set you can change. |
 | **Risk and technicals** | Beta, volatility, drawdowns, Sharpe and Sortino, VaR, moving averages, RSI, MACD and volume. |
 | **Filings and insiders** | Recent 10-K, 10-Q and 8-K filings with direct links, plus Form 4 insider trades with net buying and selling. |
-| **Research report** | A rules-based note covering business, positioning, growth, financials, valuation, risks and thesis, with a six-factor Buy, Hold or Sell rating. Exports as a one-page tear sheet or a full PDF report. |
-| **Portfolio builder** | Build allocations (preset or custom). See position sizing, return and risk contribution, VaR, the correlation matrix, and asset-class and sector exposure against the S&P 500. |
-| **Retirement simulator** | A 5,000-path Monte Carlo that estimates the chance your savings last, shows best and worst cases, and finds the savings rate you need. |
-| **Macro and regime** | Classifies the economy as Expansion, Recovery, Slowdown, Recession or Stagflation from GDP, CPI, unemployment (the Sahm rule) and the yield curve. Shows what each regime has meant for stocks, bonds, real assets and sectors. |
+| **Research report** | Rules-based note covering business, positioning, growth, financials, valuation, risks and thesis, with a six-factor rating. Exports as a one-page tear sheet or a full PDF report. |
+| **Portfolio builder** | Preset or custom allocations. See position sizing, return and risk contribution, the correlation matrix, and asset-class and sector exposure against the S&P 500. |
+| **Retirement simulator** | 5,000-path Monte Carlo that estimates the chance your savings last, shows best and worst cases, and finds the savings rate you need. |
+| **Macro and regime** | Classifies the economy as Expansion, Recovery, Slowdown, Recession or Stagflation, and shows what each regime has meant for stocks, bonds, real assets and sectors. |
 | **Screener** | A 42-company coverage universe across 10 industries, sortable and comparable side by side. |
-
-Every conclusion traces back to a number on the page. The commentary is generated from templates, not from a language model, so it can't invent a figure.
 
 ---
 
@@ -52,30 +70,54 @@ Every conclusion traces back to a number on the page. The commentary is generate
 | ![Portfolio builder](docs/screenshots/portfolio.png) | ![Retirement simulator](docs/screenshots/retirement.png) |
 | **Portfolio builder:** risk metrics, drawdown and position sizing | **Retirement simulator:** Monte Carlo probability of success |
 
-![Architecture](docs/screenshots/architecture.png)
-
 ---
 
-## How it's built
+## Architecture
 
 ```
-Browser (React)                        Vercel (free tier)                   Public data
-─────────────────────────              ─────────────────────────            ─────────────────────
-Pages + Plotly charts        ──JSON──▶ CDN cache (s-maxage, SWR)            SEC EDGAR
-Valuation engine (DCF, RI,             Route handlers  ────────────────────▶ Yahoo Finance
-  comps, scenarios, rating)              /api/company/[ticker]               FRED
-Monte Carlo, regime rules                /api/prices  /api/macro             U.S. Treasury
-Rules-based research note                XBRL → normalized statements        Federal Reserve RSS
-PDF export (jsPDF)                     SEC throttle (≤10 req/s)
-                                       data/universe.json (daily GitHub Action)
+User
+ │
+ ▼
+Next.js App Router (browser)
+ ├── Company research        overview, statements, ratios, filings, insiders
+ ├── Valuation engine        DCF, residual income, scenarios, rating
+ ├── Portfolio builder       risk metrics, exposures, correlations
+ ├── Retirement simulator    Monte Carlo
+ ├── Macro dashboard         regime classification, yield curve
+ └── Research reports        rules-based note, PDF export
+ │
+ ▼
+Vercel CDN cache  (s-maxage + stale-while-revalidate)
+ │
+ ▼
+Server route handlers (TypeScript, serverless)
+ ├── SEC EDGAR               XBRL company facts, submissions
+ ├── SEC Form 4              insider transactions
+ ├── Yahoo Finance           prices, profile, estimates, earnings, news
+ ├── FRED                    rates, inflation, GDP, labor, credit, VIX
+ ├── U.S. Treasury           daily par yield curve
+ └── Federal Reserve RSS     press releases
+
+GitHub Actions ──► data/universe.json (daily snapshot of the coverage universe)
 ```
 
-- **No backend server.** The API is a set of Next.js route handlers that deploy as serverless functions next to the site.
-- **Valuation runs in the browser.** Changing an assumption updates the model instantly with no round trip.
-- **Three layers of caching** keep it free to run: Vercel's CDN, an in-memory cache per function instance, and a static snapshot of the 42-company universe rebuilt each weekday by a GitHub Action.
-- **XBRL processing.** Companies file thousands of tagged facts. The pipeline keeps 10-K and 10-Q values, takes the latest filing for each period, turns year-to-date figures into quarters, falls back across the different tags companies use for the same line, and merges predecessor filers (for example, Exxon's pre-merger CIK).
+![Architecture page](docs/screenshots/architecture.png)
 
-The app has its own [Architecture page](app/architecture/page.tsx) with the full diagram and a walk-through.
+- **No backend server.** The API is a set of Next.js route handlers deployed as serverless functions alongside the site.
+- **Valuation runs in the browser,** so changing an assumption updates the model instantly.
+- **Three layers of caching** keep it free to run: Vercel's CDN, a per-instance in-memory cache, and a static snapshot of the coverage universe.
+
+The app includes an [Architecture page](app/architecture/page.tsx) with the full diagram and a walk-through of ingestion, processing, caching and the valuation engine.
+
+## Design philosophy
+
+**Transparency.** Every figure on the page traces back to a filing, a market data point or a stated assumption.
+
+**Free data first.** All core features work with publicly available information and free infrastructure.
+
+**Deterministic analysis.** Research notes and ratings come from rules applied to measured financial data, not from a language model. The same inputs always give the same output.
+
+**Explainability.** Every assumption, valuation input, financial adjustment and economic indicator is visible and, where it makes sense, editable.
 
 ### Tech stack
 
@@ -102,17 +144,25 @@ The app has its own [Architecture page](app/architecture/page.tsx) with the full
 
 ---
 
-## What I couldn't do (yet)
+## Engineering constraints and lessons learned
 
-Building with no budget meant working around a few walls:
+The project had a budget of zero, and several of its best design decisions came from that.
 
-- **No Oracle Cloud.** My first plan was a Python API (FastAPI and EdgarTools) on Oracle's free-tier VM. Oracle requires a credit card to sign up, and I don't have one. So I rewrote the backend in TypeScript as Vercel route handlers. That turned out simpler: one repo, one deploy, and no server to keep alive.
-- **No OpenAI.** The original design had GPT write the research notes. I couldn't afford an API key. So I wrote a rules-based note generator instead. Looking back, that's the better design for this kind of tool: every sentence is backed by a number, it never makes a figure up, and it costs nothing.
-- **No Stooq.** I wanted Stooq as a second price source, but it now serves a bot check to scripts, and I didn't want to get around that.
-- **No EdgarTools.** It's a great Python library, but it only works with a Python server. I rebuilt the parts I needed (XBRL normalization and Form 4 parsing) in TypeScript.
-- **Yahoo Finance is unofficial.** It's free, but it can change without warning, so every Yahoo field is optional and the app still works from SEC data alone.
+### Infrastructure
 
-The valuation model isn't tuned to agree with the market. When a company's free cash flow is squeezed (as with Microsoft's AI data-center spending in 2026), the DCF says so, and the page shows exactly which inputs drive it.
+The original architecture used a Python API (FastAPI and EdgarTools) deployed on Oracle Cloud's free tier. Oracle requires a credit card to sign up, which I don't have, so I redesigned the backend around Vercel route handlers in TypeScript and rebuilt the parts of EdgarTools I needed (XBRL normalization and Form 4 parsing). The result is simpler: one repository, one deployment, and no server to maintain.
+
+### Research notes without a language model
+
+The first design used the OpenAI API to write research notes. Without a budget for API usage, I built a deterministic, rules-based generator instead. It turned out to be the better design for financial research: every sentence is backed by a computed figure, it can't make a number up, and it costs nothing to run.
+
+### Data reliability
+
+Yahoo Finance is free but unofficial and can change without notice, so every Yahoo field is optional and the core analysis still works from SEC data alone. I evaluated Stooq as a second price source, but it now puts automated requests behind a bot check, so I left it out rather than work around that.
+
+### Letting the model disagree with the market
+
+The valuation model isn't tuned to agree with market prices. When a company's free cash flow is squeezed (as with Microsoft's AI data-center spending in 2026), the DCF says so, and the page shows exactly which inputs drive the result. A model that always agrees with the price isn't telling you anything.
 
 ---
 
@@ -121,7 +171,7 @@ The valuation model isn't tuned to agree with the market. When a company's free 
 You need Node.js 20 or newer.
 
 ```bash
-git clone https://github.com/<your-username>/intrinsic-terminal.git
+git clone https://github.com/btx-dysmas/intrinsic-terminal.git
 cd intrinsic-terminal
 npm install
 cp .env.example .env.local   # then fill in the two values
@@ -135,7 +185,7 @@ Open http://localhost:3000.
 | `SEC_USER_AGENT` | Yes | Your name and email, e.g. `Jane Doe jane@example.com`. The SEC requires this on every request. |
 | `FRED_API_KEY` | Recommended | Free key from [fred.stlouisfed.org](https://fred.stlouisfed.org/docs/api/api_key.html). Without it, macro pages are disabled and valuations use a 4.25% risk-free rate. |
 
-To refresh the home-page universe snapshot:
+To refresh the coverage universe snapshot:
 
 ```bash
 npm run universe
