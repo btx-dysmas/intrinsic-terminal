@@ -10,6 +10,27 @@ Instead of relying on proprietary terminals or paid APIs, Intrinsic uses transpa
 
 ![Company overview](docs/screenshots/overview.png)
 
+## At a glance
+
+| | |
+|---|---|
+| **Scope** | 16 pages, including 9 views per company, from statements to a written research report |
+| **Code** | About 5,400 lines of TypeScript across 59 files, written from scratch |
+| **Data** | 6 live public sources: SEC EDGAR, SEC Form 4, Yahoo Finance, FRED, the U.S. Treasury and the Federal Reserve |
+| **Models** | Unlevered DCF, residual income, scenario and sensitivity analysis, peer multiples, a six-factor rating, Monte Carlo retirement, portfolio risk and economic regime classification |
+| **Parsing** | A custom SEC XBRL normalizer covering about 80 financial concepts, plus a Form 4 insider-trade parser |
+| **Cost to run** | $0: GitHub and Vercel's free tier, no database, no paid APIs, no AI model |
+| **Documentation** | [Architecture](docs/ARCHITECTURE.md), [14 design decisions](docs/DECISIONS.md) and a [development log](docs/DEVLOG.md) |
+
+## What happens when you type a ticker
+
+1. The server pulls every XBRL fact the company has filed with the SEC, its filing history, five years of daily prices, analyst estimates and the live 10-year Treasury yield, all in parallel.
+2. A custom pipeline turns thousands of raw, inconsistently tagged facts into clean annual, quarterly and trailing-twelve-month statements, handling restatements, year-to-date cash flows and companies that changed their tags or their legal entity.
+3. The browser derives default assumptions from the company's own history and Street consensus, then runs a DCF (or a residual income model for banks and insurers), bull and bear scenarios, sensitivity grids, peer comparisons and a rating.
+4. A rules-based engine writes a research note in which every sentence traces to a number on the page, and you can export it as a PDF.
+
+All of that takes a second or two on a cold cache (milliseconds once cached), and every assumption stays editable.
+
 ---
 
 ## Why this project exists
@@ -107,7 +128,7 @@ GitHub Actions ──► data/universe.json (daily snapshot of the coverage univ
 - **Valuation runs in the browser,** so changing an assumption updates the model instantly.
 - **Three layers of caching** keep it free to run: Vercel's CDN, a per-instance in-memory cache, and a static snapshot of the coverage universe.
 
-The app includes an [Architecture page](app/architecture/page.tsx) with the full diagram and a walk-through of ingestion, processing, caching and the valuation engine.
+The full write-up, including the request lifecycle, the XBRL pipeline step by step, cache lifetimes and failure handling, is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The app also has an [Architecture page](app/architecture/page.tsx) with the diagram.
 
 ## Design philosophy
 
@@ -146,7 +167,15 @@ The app includes an [Architecture page](app/architecture/page.tsx) with the full
 
 ## Engineering constraints and lessons learned
 
-The project had a budget of zero, and several of its best design decisions came from that.
+Building Intrinsic with no budget forced several architectural decisions. The project deliberately avoids paid infrastructure and proprietary data feeds, and the notable trade-offs were:
+
+- **Replacing a Python server with serverless route handlers**, so the whole system runs on free hosting with nothing to keep alive
+- **Building custom SEC parsers** (XBRL normalization and Form 4) instead of relying on hosted data services
+- **Replacing LLM-generated research notes with deterministic logic**, so every sentence is backed by a number
+- **Designing around public-data reliability and rate limits:** an SEC request throttle, retries, optional fields, and caching that never stores a failure
+- **Using free deployment infrastructure while keeping performance acceptable,** through CDN caching, in-memory request deduplication and a static snapshot for the busiest pages
+
+Many of the project's engineering decisions were driven by cost, transparency and maintainability rather than convenience. Each one is written up, with the alternatives I considered, in [DECISIONS.md](docs/DECISIONS.md).
 
 ### Infrastructure
 
@@ -163,6 +192,14 @@ Yahoo Finance is free but unofficial and can change without notice, so every Yah
 ### Letting the model disagree with the market
 
 The valuation model isn't tuned to agree with market prices. When a company's free cash flow is squeezed (as with Microsoft's AI data-center spending in 2026), the DCF says so, and the page shows exactly which inputs drive the result. A model that always agrees with the price isn't telling you anything.
+
+## The work behind it
+
+| Document | What's in it |
+|---|---|
+| [Architecture](docs/ARCHITECTURE.md) | System design, the life of a request, the XBRL pipeline, caching, the valuation engine and failure handling |
+| [Design decisions](docs/DECISIONS.md) | 14 decisions, each with its context, the alternatives and the consequences |
+| [Development log](docs/DEVLOG.md) | How the project evolved: the Python prototype, the constraints that forced a rewrite, the bugs real companies exposed, and the first production incident |
 
 ---
 
