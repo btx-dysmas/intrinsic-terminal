@@ -5,11 +5,11 @@
 /* Light palette. Chart hues validated for CVD separation and contrast against the card surface. */
 :root {
   color-scheme: light;
-  --ground: #eef1f6;
+  --ground: #f3f4f6;
   --card: #ffffff;
-  --card-2: #f6f8fb;
-  --line: #e2e6ee;
-  --line-2: #cdd3de;
+  --card-2: #f6f7f9;
+  --line: #e3e6eb;
+  --line-2: #cfd4dc;
   --ink: #1a2233;
   --ink-2: #4b5568;
   --ink-3: #737d91;
@@ -20,7 +20,7 @@
   --chrome-ink: #c3cde2;
   --chrome-seg: #2f5fbf;
   --accent: #0b7f7a;
-  --accent-soft: #e3f3f2;
+  --accent-soft: #e8f3f2;
   --input: #1b4fc4;
   --c0: #b4bac6;
   --c1: #2f5fbf;
@@ -119,13 +119,12 @@ body {
   .card {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 4px;
     min-width: 0;
-    box-shadow: 0 1px 2px rgb(15 26 48 / 0.04);
   }
   .card-title {
-    font-size: 17px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--ink);
     display: flex;
     align-items: center;
@@ -134,17 +133,32 @@ body {
   }
   .card-sub {
     color: var(--ink-3);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 12px;
     margin-top: 1px;
   }
+  /* KPI strip: related figures share one surface, separated by rules; the first figure leads. */
+  .kpis {
+    display: grid;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .kpis > .kpi {
+    box-shadow: -1px 0 0 var(--line);
+  }
+  .kpi-v {
+    font-size: 21px;
+  }
+  .kpis > .kpi:first-child .kpi-v {
+    font-size: 29px;
+  }
   .section-head {
-    color: var(--accent);
-    font-size: 17px;
+    font-family: var(--font-serif);
+    color: var(--ink);
+    font-size: 19px;
     font-weight: 600;
-    margin: 10px 2px -2px;
+    margin: 14px 2px -4px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -179,16 +193,17 @@ body {
     font-size: 14px;
   }
   .t th {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    color: var(--ink-2);
+    color: var(--ink-3);
     text-align: right;
     padding: 8px 12px;
     border-bottom: 1px solid var(--line-2);
     background: var(--card);
     vertical-align: bottom;
     line-height: 1.25;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
   .t th:first-child {
     text-align: left;

@@ -53,7 +53,7 @@ export default function Retirement() {
 
   return (
     <>
-      <TitleBar title="Retirement Simulator" back="/" sub={<><span>Monte Carlo, {plan.runs.toLocaleString("en-US")} paths</span><span>Annual steps, results in today&apos;s dollars</span></>} />
+      <TitleBar title="Retirement simulator" back="/" sub={<><span>Monte Carlo, {plan.runs.toLocaleString("en-US")} paths</span><span>Annual steps, results in today&apos;s dollars</span></>} />
       <Content>
         <div className="grid gap-3.5 xl:grid-cols-[360px_minmax(0,1fr)]">
           <Card title="Assumptions">
@@ -82,14 +82,14 @@ export default function Retirement() {
                 <Card title="Probability of success">
                   <div className="flex flex-col items-center px-5 pb-4">
                     <div className="relative">
-                      <Donut value={r.success} label={`${verdict}: ${fP(r.success, 0)}`} color={tone} />
-                      <span className="absolute inset-0 flex items-center justify-center text-[19px] font-semibold">{fP(r.success, 0)}</span>
+                      <Donut value={r.success} label={`${verdict}: ${fP(r.success, 1)}`} color={tone} />
+                      <span className="absolute inset-0 flex items-center justify-center text-[19px] font-semibold">{fP(r.success, 1)}</span>
                     </div>
                     <div className="mt-1 text-[14px] font-semibold" style={{ color: tone }}>{verdict}</div>
                     <p className="mt-1 text-center text-[12.5px] text-ink-3">Share of paths where savings last to age {plan.endAge}</p>
                   </div>
                 </Card>
-                <div className="grid gap-3.5 sm:grid-cols-3">
+                <div className="kpis sm:grid-cols-3">
                   <Kpi title="Median at retirement" unit={`Age ${plan.retireAge}`} value={fD(r.atRetire.p50, 0)}
                     delta={<span className="text-[12.5px] text-ink-3">90% range {fB(r.atRetire.p5)} to {fB(r.atRetire.p95)}</span>} />
                   <Kpi title="Worst case" unit={`5th percentile, wealth at ${plan.endAge}`} value={<span className={r.end.p5 > 0 ? "" : "text-neg"}>{fD(r.end.p5, 0)}</span>}

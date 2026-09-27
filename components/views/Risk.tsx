@@ -23,13 +23,13 @@ export default function Risk() {
   const sharpeGap = R3.sharpe - R3.msharpe;
   return (
     <>
-      <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="kpis sm:grid-cols-2 lg:grid-cols-4">
         <Kpi title="Volatility" unit="Annualized, 3 years" value={fP(R3.vol, 1)} delta={<Delta v={null} text={`S&P 500 ${fP(R3.mvol, 1)}`} />} />
         <Kpi title="Sharpe ratio" unit="3 years" value={fN(R3.sharpe, 2)} delta={<Delta v={sharpeGap} text={`${sharpeGap >= 0 ? "+" : ""}${sharpeGap.toFixed(2)}`} vs="vs S&P 500" />} />
         <Kpi title="Max drawdown" unit="3 years" value={fP(R3.mdd, 1)} delta={<Delta v={null} text={`S&P 500 ${fP(R3.mmdd, 1)}`} />} />
         <Kpi title="Beta" unit="vs S&P 500, 3-yr daily" value={fN(R3.beta, 2)} delta={<Delta v={null} text={`Correlation ${fN(R3.corr, 2)}`} />} />
       </div>
-      <Card title="Risk and Return Statistics" unit={`(daily total returns; risk-free rate ${fP(rf, 2)})`}>
+      <Card title="Risk and return statistics" unit={`(daily total returns; risk-free rate ${fP(rf, 2)})`}>
         <Tw>
           <table className="t dense">
             <thead><tr><th>Measure</th><th>1 year</th><th>3 years</th><th>5 years</th><th>S&amp;P 500 1Y / 3Y / 5Y</th></tr></thead>

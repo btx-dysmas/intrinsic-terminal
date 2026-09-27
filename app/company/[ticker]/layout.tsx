@@ -6,7 +6,7 @@ import { CURATED_TICKERS } from "@/lib/universe";
 import { ErrorCard, Loading } from "@/components/ui";
 import { getCompany, getMacro, type Co } from "@/lib/api";
 import { CompanyCtx } from "@/lib/company-context";
-import { cls, fD, fN, fP, ok } from "@/lib/format";
+import { ago, cls, dLong, fD, fN, fP, ok } from "@/lib/format";
 import { capm, defaults, peerStats, rating, RF_DEFAULT, valuation, type Assumptions } from "@/lib/models";
 
 export default function CompanyLayout({ children, params }: { children: ReactNode; params: Promise<{ ticker: string }> }) {
@@ -20,6 +20,9 @@ export default function CompanyLayout({ children, params }: { children: ReactNod
   const [peers, setPeers] = useState<string[]>([]);
   const [peerMap, setPeerMap] = useState<Record<string, Co>>({});
   const [peersLoading, setPeersLoading] = useState(false);
+  const [loadedAt, setLoadedAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 30000); return () => clearInterval(t); }, []);
   const [rf, setRf] = useState<number | null>(null);
 
   useEffect(() => {
@@ -30,6 +33,7 @@ export default function CompanyLayout({ children, params }: { children: ReactNod
       .then((c) => {
         if (!alive) return;
         setCo(c);
+        setLoadedAt(Date.now());
         setAState(defaults(c));
         setPeers(c.defaultPeers);
       })
@@ -88,7 +92,7 @@ export default function CompanyLayout({ children, params }: { children: ReactNod
       <TitleBar
         back="/"
         title={co.name}
-        sub={<><b className="tracking-wide text-c1">{co.tk}</b><span>{co.y.exchange || co.raw.exchange}</span><span>{co.sector} · {co.industry}</span><span className="text-ink-2">{viewLabel}</span></>}
+        sub={<><b className="tracking-wide text-c1">{co.tk}</b><span>{co.y.exchange || co.raw.exchange}</span><span>{co.sector} · {co.industry}</span><span className="text-ink-2">{viewLabel}</span><span title="Latest 10-K or 10-Q on EDGAR">{co.raw.lastForm} filed {dLong(co.raw.lastFiled)}</span><span>Close {dLong(co.priceDate)}{loadedAt ? ` · loaded ${ago(loadedAt, now)}` : ""}</span></>}
         right={<><b className="text-[22px] font-semibold text-ink">{fD(co.price)}</b><span className={`text-[13px] ${cls(chg)}`}>{ok(chg) ? `${co.price - co.prev >= 0 ? "+" : ""}${fN(co.price - co.prev)} (${fP(chg, 2, true)})` : ""}</span></>}
         filters={<>
           <Filter label="Company">

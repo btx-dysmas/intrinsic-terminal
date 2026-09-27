@@ -41,18 +41,24 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
   );
 }
 
-function RailLink({ href, icon, label, active, disabled }: { href: string; icon: string; label: string; active: boolean; disabled?: boolean }) {
+function NavLink({ href, icon, label, active, disabled }: { href: string; icon: string; label: string; active: boolean; disabled?: boolean }) {
   return (
     <Link
-      href={href} aria-label={label} aria-current={active ? "page" : undefined} aria-disabled={disabled}
-      className={`group relative grid h-[44px] w-full place-items-center transition-colors ${active ? "bg-chrome-hi text-white" : "text-chrome-ink hover:bg-white/5 hover:text-white"} ${disabled ? "pointer-events-none opacity-30" : ""}`}
+      href={href} aria-current={active ? "page" : undefined} aria-disabled={disabled} title={label}
+      className={`flex items-center gap-2.5 rounded px-2 py-[5px] text-[13px] transition-colors ${active ? "bg-accent-soft font-medium text-ink" : "text-ink-2 hover:bg-card-2 hover:text-ink"} ${disabled ? "pointer-events-none opacity-40" : ""}`}
     >
-      {active && <span className="absolute top-2 bottom-2 left-0 w-[3px] rounded-r bg-[var(--c2)]" />}
-      <Icon name={icon} />
-      <span className="pointer-events-none absolute left-[58px] top-1/2 z-40 -translate-y-1/2 rounded bg-chrome px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 shadow-lg ring-1 ring-white/10 group-hover:opacity-100">{label}</span>
+      <span className={active ? "text-accent" : "text-ink-3"}><Icon name={icon} size={16} /></span>
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
+
+const Group = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
+  <div className="pb-4">
+    <div className="truncate px-2 pb-1 text-[10.5px] font-semibold tracking-[0.1em] text-ink-3 uppercase">{label}</div>
+    {children}
+  </div>
+);
 
 function Search() {
   const router = useRouter();
@@ -71,15 +77,15 @@ function Search() {
     router.push(`/company/${encodeURIComponent(tk.trim().toUpperCase().replace(".", "-"))}`);
   };
   return (
-    <form role="search" className="relative flex h-[32px] w-[min(400px,100%)] items-center gap-2 rounded-md bg-white/10 pr-1 pl-3 ring-1 ring-white/15 focus-within:ring-white/40"
+    <form role="search" className="relative flex h-[32px] w-[min(420px,100%)] items-center gap-2 rounded border border-line-2 bg-card-2 pr-1 pl-2.5 focus-within:border-accent"
       onSubmit={(e) => { e.preventDefault(); if (q.trim()) go(hits[0]?.ticker === q.trim().toUpperCase() || !hits.length ? q : hits[0].ticker); }}>
-      <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none fill-none stroke-white/70" strokeWidth={2}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+      <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none fill-none stroke-[var(--ink-3)]" strokeWidth={2}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
       <input
-        aria-label="Search ticker or company" placeholder="Search any U.S. ticker or company" value={q}
+        aria-label="Search ticker or company" placeholder="Ticker or company name, e.g. ORCL" value={q}
         onChange={(e) => { setQ(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onBlur={() => setTimeout(() => setOpen(false), 150)}
-        className="min-w-0 flex-1 bg-transparent text-[13.5px] text-white outline-none placeholder:text-white/55"
+        className="min-w-0 flex-1 bg-transparent text-[13.5px] text-ink outline-none placeholder:text-ink-3"
       />
-      <kbd className="hidden rounded bg-white/10 px-1.5 text-[11px] text-white/60 sm:block">Enter</kbd>
+      <kbd className="hidden rounded border border-line px-1.5 text-[11px] text-ink-3 sm:block">↵</kbd>
       {open && q.trim() && hits.length > 0 && (
         <ul className="absolute top-[38px] left-0 z-50 w-full overflow-hidden rounded-md border border-line bg-card text-ink shadow-xl">
           {hits.map((h) => (
@@ -111,36 +117,44 @@ export default function Shell({ children }: { children: ReactNode }) {
   }, []);
   const online = health?.status === "ok";
   return (
-    <div className="grid min-h-screen grid-cols-1 md:grid-cols-[60px_minmax(0,1fr)]">
-      <aside className="sticky top-0 z-30 hidden h-screen flex-col items-center bg-chrome md:flex">
-        <Link href="/" aria-label="Coverage universe" className="grid h-[52px] w-full place-items-center border-b border-white/10">
-          <span className="grid h-8 w-8 place-items-center rounded-md border border-white/25 font-serif text-[17px] font-semibold text-white">i</span>
+    <div className="flex min-h-screen">
+      <aside className="sticky top-0 z-30 hidden h-screen w-[228px] shrink-0 flex-col border-r border-line bg-card md:flex">
+        <Link href="/" className="flex items-baseline gap-2 border-b border-line px-4 pt-4 pb-3.5">
+          <span className="font-serif text-[21px] leading-none font-semibold tracking-tight text-ink">Intrinsic</span>
+          <span className="text-[11.5px] text-ink-3">equity research</span>
         </Link>
-        <nav className="flex w-full flex-1 flex-col gap-0.5 pt-2" aria-label="Sections">
-          {GLOBAL.slice(0, 2).map(([href, icon, label]) => <RailLink key={href} href={href} icon={icon} label={label} active={path === href} />)}
-          {GLOBAL.slice(2).map(([href, icon, label]) => <RailLink key={href} href={href} icon={icon} label={label} active={path === href} />)}
-          <div className="mx-3 my-2 border-t border-white/10" />
-          {COMPANY_VIEWS.map(([v, l]) => (
-            <RailLink key={v} href={tk ? `/company/${tk}${v === "overview" ? "" : "/" + v}` : "#"} icon={v} label={tk ? `${l} · ${tk}` : `${l} (select a company)`} active={view === v} disabled={!tk} />
-          ))}
+        <nav className="flex-1 overflow-y-auto px-2 pt-3" aria-label="Sections">
+          <Group label="Research">
+            <NavLink href="/" icon="home" label="Coverage universe" active={path === "/"} />
+            <NavLink href="/screener" icon="screener" label="Peer screener" active={path === "/screener"} />
+          </Group>
+          <Group label={tk ? <>Company · <span className="text-ink">{tk}</span></> : "Company · none selected"}>
+            {COMPANY_VIEWS.map(([v, l]) => (
+              <NavLink key={v} href={tk ? `/company/${tk}${v === "overview" ? "" : "/" + v}` : "#"} icon={v} label={l} active={view === v} disabled={!tk} />
+            ))}
+          </Group>
+          <Group label="Tools">
+            {GLOBAL.slice(2).map(([href, icon, label]) => <NavLink key={href} href={href} icon={icon} label={label} active={path === href} />)}
+          </Group>
+          <Group label="About">
+            <NavLink href="/architecture" icon="architecture" label="Architecture" active={path === "/architecture"} />
+            <NavLink href="/methodology" icon="help" label="Methodology" active={path === "/methodology"} />
+          </Group>
         </nav>
-        <RailLink href="/architecture" icon="architecture" label="Architecture" active={path === "/architecture"} />
-        <RailLink href="/methodology" icon="help" label="Methodology & data sources" active={path === "/methodology"} />
-      </aside>
-      <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-20 flex h-[52px] items-stretch bg-chrome-2 text-white">
-          <div className="flex min-w-0 flex-1 items-center gap-5 px-4 md:px-5">
-            <Link href="/" className="hidden shrink-0 items-baseline gap-2 lg:flex">
-              <span className="text-[15px] font-semibold tracking-[0.16em]">INTRINSIC</span>
-              <span className="text-[13px] text-chrome-ink">Research Terminal</span>
-            </Link>
-            <Search />
+        <div className="border-t border-line px-4 py-3 text-[11.5px] leading-snug text-ink-3">
+          <div className="flex items-center gap-1.5 text-ink-2">
+            <i className={`inline-block h-[6px] w-[6px] rounded-full ${!health ? "bg-ink-4" : online ? "bg-pos" : "bg-warn"}`} />
+            {!health ? "Checking data sources…" : online ? "Data sources connected" : "API unavailable"}
           </div>
-          <div className="flex items-center gap-3 bg-chrome-seg pr-4 pl-10 text-[13px]" style={{ clipPath: "polygon(26px 0,100% 0,100% 100%,0 100%)" }}>
-            <span className="hidden items-center gap-1.5 text-white/85 xl:flex">
-              <i className={`inline-block h-[7px] w-[7px] rounded-full ${online ? "bg-emerald-300" : "bg-amber-300"}`} />
-              {!health ? "Connecting…" : online ? health.fredKey ? "Live · SEC EDGAR · Yahoo Finance · FRED" : "Live · SEC EDGAR · Yahoo Finance" : "API unavailable"}
-            </span>
+          <div className="mt-0.5">SEC EDGAR · Yahoo Finance{health?.fredKey ? " · FRED" : ""}</div>
+        </div>
+      </aside>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-20 flex h-[50px] items-center gap-4 border-b border-line bg-card px-4 md:px-6">
+          <Link href="/" className="font-serif text-[17px] font-semibold text-ink md:hidden">Intrinsic</Link>
+          <Search />
+          <div className="ml-auto flex items-center gap-3 text-[12px] text-ink-3">
+            <span className="hidden lg:inline">Market data delayed · filings as reported</span>
             <ThemeToggle />
           </div>
         </header>
@@ -167,7 +181,7 @@ export default function Shell({ children }: { children: ReactNode }) {
 /** Page header: title row plus an optional strip of labeled filters, closed by an accent rule. */
 export function TitleBar({ title, sub, right, back, filters }: { title: ReactNode; sub?: ReactNode; right?: ReactNode; back?: string; filters?: ReactNode }) {
   return (
-    <div className="border-b-2 border-accent bg-card">
+    <div className="border-b border-line bg-card">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-3 pb-2 md:px-6">
         {back && (
           <Link href={back} aria-label="Back" className="grid place-items-center rounded p-0.5 text-ink-3 hover:text-accent">
@@ -175,7 +189,7 @@ export function TitleBar({ title, sub, right, back, filters }: { title: ReactNod
           </Link>
         )}
         <div className="min-w-0">
-          <h1 className="text-[20px] font-semibold text-balance text-ink">{title}</h1>
+          <h1 className="font-serif text-[25px] leading-tight font-semibold tracking-tight text-balance text-ink">{title}</h1>
           {sub && <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[12.5px] text-ink-3">{sub}</div>}
         </div>
         {right && <div className="ml-auto flex items-baseline gap-2.5 text-right">{right}</div>}
@@ -194,5 +208,5 @@ export function Filter({ label, children }: { label: string; children: ReactNode
   );
 }
 
-export const Content = ({ children }: { children: ReactNode }) => <main className="grid w-full max-w-[1560px] gap-3.5 px-4 pt-4 pb-7 md:px-6">{children}</main>;
+export const Content = ({ children }: { children: ReactNode }) => <main className="grid w-full max-w-[1560px] gap-4 px-4 pt-5 pb-10 md:px-6">{children}</main>;
 export const Section = ({ children }: { children: ReactNode }) => <h2 className="section-head">{children}</h2>;

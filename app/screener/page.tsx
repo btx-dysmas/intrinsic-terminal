@@ -43,10 +43,10 @@ export default function Screener() {
   const chosen = sel.map((t) => (u?.rows ?? []).find((r: any) => r.ticker === t)).filter(Boolean);
   return (
     <>
-      <TitleBar title="Peer Screener" back="/" sub={<span>Featured universe · sort, filter and compare</span>} />
+      <TitleBar title="Peer screener" back="/" sub={<span>Featured universe · sort, filter and compare</span>} />
       <Content>
         {!u.rows.length ? <div className="card px-5 py-8 text-center text-ink-3">Run npm run universe to build the featured-company snapshot.</div> : <>
-          <Card title="Universe Screen" unit={`(${rows.length} companies; click a column to sort, tick to compare, click a name to open)`}
+          <Card title="Universe screen" unit={`(${rows.length} companies; click a column to sort, tick to compare, click a name to open)`}
             right={<span className="inline-block"><select className="fsel min-w-[220px]" aria-label="Filter by peer group" value={group} onChange={(e) => setGroup(e.target.value)}>{["All", ...Object.keys(u.groups)].map((g) => <option key={g}>{g}</option>)}</select></span>}>
             <Tw>
               <table className="t dense">
@@ -67,7 +67,7 @@ export default function Screener() {
             </Tw>
             <Note>Growth, margin, return and upside columns are shaded for the top (green) and bottom (red) quintile of the current screen.</Note>
           </Card>
-          <Card title="Side-by-Side Comparison" unit={`(${chosen.length} selected)`}>
+          <Card title="Side-by-side comparison" unit={`(${chosen.length} selected)`}>
             {chosen.length ? (
               <Tw>
                 <table className="t dense">

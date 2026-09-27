@@ -6,7 +6,7 @@ const P = ({ children }: { children: React.ReactNode }) => <p className="mb-3">{
 export default function Methodology() {
   return (
     <>
-      <TitleBar title="Methodology & Data Sources" back="/" />
+      <TitleBar title="Methodology and data sources" back="/" />
       <Content>
         <div className="grid gap-3.5 lg:grid-cols-2">
           <Card title="Data sources">

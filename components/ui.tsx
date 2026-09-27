@@ -26,7 +26,7 @@ export function Arrow({ v }: { v: number | null | undefined }) {
   const up = v > 0.0005, dn = v < -0.0005;
   const color = up ? "text-pos" : dn ? "text-neg" : "text-ink-3";
   return (
-    <svg viewBox="0 0 24 24" className={`h-[22px] w-[22px] flex-none fill-none stroke-current ${color}`} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className={`h-[16px] w-[16px] flex-none fill-none stroke-current ${color}`} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
       {up ? <path d="M12 16.5v-9M8 11l4-4 4 4" /> : dn ? <path d="M12 7.5v9M8 13l4 4 4-4" /> : <path d="M7.5 12h9" />}
     </svg>
@@ -35,9 +35,9 @@ export function Arrow({ v }: { v: number | null | undefined }) {
 
 /** Change line under a figure: arrow, signed percentage, and what it is measured against. */
 export function Delta({ v, vs, dp = 1, text }: { v: number | null | undefined; vs?: ReactNode; dp?: number; text?: string }) {
-  if (!ok(v) && !text) return <div className="min-h-[24px]" />;
+  if (!ok(v) && !text) return null;
   return (
-    <div className="flex min-h-[24px] items-center gap-2 text-[14px] text-ink-2">
+    <div className="flex min-h-[20px] items-center gap-1.5 text-[12.5px] text-ink-2">
       {ok(v) && <Arrow v={v} />}
       <span className={ok(v) ? (v > 0.0005 ? "font-semibold text-pos" : v < -0.0005 ? "font-semibold text-neg" : "") : ""}>{text ?? fP(v, dp, true)}</span>
       {vs && <span className="text-ink-3">{vs}</span>}
@@ -47,14 +47,14 @@ export function Delta({ v, vs, dp = 1, text }: { v: number | null | undefined; v
 
 export function Kpi({ title, unit, value, delta, extra }: { title: ReactNode; unit: ReactNode; value: ReactNode; delta?: ReactNode; extra?: ReactNode }) {
   return (
-    <div className="card flex min-h-[132px] flex-col px-5 pt-4 pb-4">
-      <div className="text-[14px] font-semibold tracking-[0.06em] text-ink uppercase">{title}</div>
-      <div className="text-[12.5px] text-ink-3">{unit}</div>
-      <div className="mt-auto flex items-end justify-between gap-3 pt-2">
-        <div className="text-[30px] leading-none font-semibold tracking-tight text-ink">{value}</div>
+    <div className="kpi flex min-w-0 flex-col px-5 pt-3.5 pb-3">
+      <div className="text-[11px] font-semibold tracking-[0.08em] text-ink-3 uppercase">{title}</div>
+      <div className="mt-2 flex items-end justify-between gap-3">
+        <div className="kpi-v leading-none font-semibold tracking-tight text-ink">{value}</div>
         {extra}
       </div>
-      <div className="mt-2">{delta ?? <div className="min-h-[24px]" />}</div>
+      <div className="mt-1 truncate text-[12px] text-ink-3" title={typeof unit === "string" ? unit : undefined}>{unit}</div>
+      {delta && <div className="mt-1.5">{delta}</div>}
     </div>
   );
 }

@@ -55,7 +55,7 @@ export default function Report() {
   const tone = rt.rating === "BUY" ? "pos" : rt.rating === "SELL" ? "neg" : "warn";
   return (
     <>
-      <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="kpis sm:grid-cols-2 lg:grid-cols-4">
         <Kpi title="Model rating" unit="Composite, -2 to +2" value={(rt.total >= 0 ? "+" : "") + rt.total.toFixed(2)} extra={<Badge text={rt.rating} tone={tone} />} />
         <Kpi title="Intrinsic value" unit="Per share" value={fPS(d.ps)} delta={<Delta v={d.up} vs="vs price" />} />
         <Kpi title="Street target" unit={co.street.n ? `Mean of ${co.street.n} analysts` : "No coverage data"} value={fD(co.street.target)} delta={<Delta v={co.street.up} vs="vs price" />} />

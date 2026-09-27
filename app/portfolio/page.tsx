@@ -60,7 +60,7 @@ export default function Portfolio() {
 
   return (
     <>
-      <TitleBar title="Portfolio Builder" back="/" sub={<><span>Adjusted daily closes, Yahoo Finance</span><span>Rebalanced daily to target weights</span><span>Benchmark S&amp;P 500 (SPY)</span></>} />
+      <TitleBar title="Portfolio builder" back="/" sub={<><span>Adjusted daily closes, Yahoo Finance</span><span>Rebalanced daily to target weights</span><span>Benchmark S&amp;P 500 (SPY)</span></>} />
       <Content>
         <div className="grid gap-3.5 xl:grid-cols-[400px_minmax(0,1fr)]">
           <Card title="Holdings" unit="Target weights, up to 15 positions">
@@ -100,7 +100,7 @@ export default function Portfolio() {
             {!data && !err && <Loading text="Loading daily price history" />}
             {data && !r && <ErrorCard title="Not enough history" message="The selected holdings do not share at least 30 trading days of prices. Remove recently listed tickers or shorten the period." />}
             {r && <>
-              <div className="grid gap-3.5 sm:grid-cols-2 2xl:grid-cols-4">
+              <div className="kpis sm:grid-cols-2 2xl:grid-cols-4">
                 <Kpi title="Annualized return" unit={`SPY ${fP(r.bench.ann)}`} value={<span className={cls(r.port.ann)}>{fP(r.port.ann)}</span>} />
                 <Kpi title="Volatility" unit={`SPY ${fP(r.bench.vol)}`} value={fP(r.port.vol)} />
                 <Kpi title="Sharpe ratio" unit={`SPY ${fN(r.bench.sharpe)} · risk-free ${fP(rf, 2)}`} value={fN(r.port.sharpe)} />

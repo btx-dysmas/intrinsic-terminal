@@ -45,7 +45,7 @@ export default function Macro() {
   };
   return (
     <>
-      <TitleBar title="Macro Dashboard" back="/" sub={<><span>FRED (Federal Reserve Bank of St. Louis)</span><span>U.S. Treasury yield curve</span><span>Federal Reserve press releases</span></>} />
+      <TitleBar title="Macro dashboard" back="/" sub={<><span>FRED (Federal Reserve Bank of St. Louis)</span><span>U.S. Treasury yield curve</span><span>Federal Reserve press releases</span></>} />
       <Content>
         {!m && !err && <Loading text="Retrieving FRED series and the Treasury yield curve" />}
         {(err || (m && !m.available)) && (
@@ -92,7 +92,7 @@ export default function Macro() {
         </>}
         {m?.available && <>
           <Section>Indicators</Section>
-          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="kpis sm:grid-cols-2 lg:grid-cols-4">
             {kpi("DGS10", "10-Year Treasury", "%, used as the risk-free rate")}
             {kpi("DFF", "Fed funds rate", "%, effective")}
             {kpi("CPIAUCSL", "CPI inflation", "%, year over year")}

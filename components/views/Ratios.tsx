@@ -17,9 +17,9 @@ export default function Ratios() {
     <>
       <div className="grid gap-3.5 lg:grid-cols-2">
         <Card title={co.fin ? "Profitability" : "Margin Structure"} unit="(fiscal years)"><div className="px-3 pb-3"><Plot fig={figMargins(co, R)} height={300} /></div></Card>
-        <Card title="Returns on Capital" unit="(fiscal years)"><div className="px-3 pb-3"><Plot fig={figReturns(co, R)} height={300} /></div></Card>
+        <Card title="Returns on capital" unit="(fiscal years)"><div className="px-3 pb-3"><Plot fig={figReturns(co, R)} height={300} /></div></Card>
       </div>
-      <Card title="Ratio Analysis" unit="(historical average spans the fiscal years shown)">
+      <Card title="Ratio analysis" unit="(historical average spans the fiscal years shown)">
         <Tw>
           <table className="t dense">
             <thead><tr><th className="sticky-col">Ratio</th>{R.map((r: any) => <th key={r.end}>FY {dLabel(r.end)}</th>)}<th>Historical<br />average</th><th>LTM<br />{dLabel(co.L.end)}</th><th>LTM vs<br />average</th></tr></thead>

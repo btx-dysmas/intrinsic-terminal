@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import Plot from "@/components/Plot";
 import { Section } from "@/components/Shell";
-import { Card, Chip, Delta, Donut, KV, Kpi, Seg, Sparkline, Tw, Var } from "@/components/ui";
+import { Card, Chip, Delta, KV, Kpi, Seg, Sparkline, Tw, Var } from "@/components/ui";
 import { figPrice, figRevEarn, figScenario } from "@/lib/charts";
 import { useCompany } from "@/lib/company-context";
 import { dLong, fB, fD, fM1, fN, fP, fVol, fX, monthName, ok, fPS } from "@/lib/format";
@@ -44,7 +44,7 @@ export default function Overview() {
           EDGAR&apos;s structured XBRL data for {co.tk} runs through {dLong(co.Q[co.Q.length - 1].end)}. The {co.raw.lastForm} filed {dLong(co.raw.lastFiled)} is not yet in the SEC data feed, so figures reflect the prior quarter.
         </div>
       )}
-      <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="kpis sm:grid-cols-2 xl:grid-cols-4">
         <Kpi title="Share price" unit={co.priceDate ? `Close ${dLong(co.priceDate)}` : "Yahoo Finance"} value={fD(co.price)} delta={<Delta v={dayChg} dp={2} vs="1 day" />} />
         <Kpi title="Base case" unit={`${co.fin ? "Residual income" : "DCF"}, per share`} value={fPS(d.ps)} delta={<Delta v={d.up} vs="vs price" />} />
         <Kpi title="Bear case" unit="Per share" value={fPS(sc[0].ps)} delta={<Delta v={sc[0].up} vs="vs price" />} />
@@ -53,42 +53,42 @@ export default function Overview() {
 
       <Section>Valuation</Section>
       <div className="grid gap-3.5 xl:grid-cols-[minmax(250px,0.9fr)_minmax(0,1.2fr)_minmax(0,1.5fr)]">
-        <div className="grid content-start gap-3.5">
-          <Card title="Price, 1 year" unit="Daily close">
-            <div className="flex items-end justify-between gap-3 px-5 pb-4">
+        <Card title="Trading" unit={co.priceDate ? `Through ${dLong(co.priceDate)}` : undefined} className="self-start">
+          <div className="divide-y divide-line px-5 pb-2">
+            <div className="flex items-end justify-between gap-3 pb-3">
               <div>
-                <div className="text-[26px] leading-none font-semibold text-ink">{fD(co.price)}</div>
-                <div className="mt-2"><Delta v={ret1y} vs="1 yr" /></div>
+                <div className="text-[11px] font-semibold tracking-[0.08em] text-ink-3 uppercase">1-year price</div>
+                <div className="mt-1.5"><Delta v={ret1y} vs="over 12 months" /></div>
               </div>
               <Sparkline data={closes1y.filter((_, i) => i % 3 === 0 || i === closes1y.length - 1)} />
             </div>
-          </Card>
-          <Card title="52-week range" unit="Position of the current price">
-            <div className="flex items-center justify-between gap-3 px-5 pb-4">
-              <div>
-                <div className="text-[26px] leading-none font-semibold text-ink">{ok(rangePos) ? `${Math.round(rangePos * 100)}%` : "—"}</div>
-                <div className="mt-2 text-[13px] text-ink-3">{fD(co.lo52)} low · {fD(co.hi52)} high</div>
+            <div className="py-3">
+              <div className="flex items-baseline justify-between">
+                <span className="text-[11px] font-semibold tracking-[0.08em] text-ink-3 uppercase">52-week range</span>
+                <span className="text-[12.5px] text-ink-2">{ok(rangePos) ? `${Math.round(rangePos * 100)}% of range` : "—"}</span>
               </div>
-              <Donut value={rangePos} label="Position in 52-week range" color="var(--c2)" />
+              <div className="relative mt-2.5 h-1.5 rounded-full bg-line" title={`Low ${fD(co.lo52)}, high ${fD(co.hi52)}, last ${fD(co.price)}`}>
+                {ok(rangePos) && <span className="absolute top-1/2 h-3 w-[3px] -translate-y-1/2 rounded-sm bg-ink" style={{ left: `calc(${Math.min(1, Math.max(0, rangePos)) * 100}% - 1px)` }} />}
+              </div>
+              <div className="mt-1.5 flex justify-between text-[12px] text-ink-3"><span>{fD(co.lo52)}</span><span>{fD(co.hi52)}</span></div>
             </div>
-          </Card>
-          <Card title="Street view" unit={ok(st.n) ? `${st.n} analysts` : "No coverage data"}>
-            <div className="px-5 pb-4">
+            <div className="pt-3 pb-2">
+              <div className="flex items-baseline justify-between">
+                <span className="text-[11px] font-semibold tracking-[0.08em] text-ink-3 uppercase">Street view</span>
+                <span className="text-[12.5px] text-ink-2">{ok(st.n) ? `${st.n} analysts` : "No coverage"}</span>
+              </div>
               {recs && rn > 0 ? (
                 <>
-                  {([["Buy", recs.strongBuy + recs.buy, "var(--c1)"], ["Hold", recs.hold, "var(--c0)"], ["Sell", recs.sell + recs.strongSell, "var(--c4)"]] as const).map(([l, n, c]) => (
-                    <div key={l} className="mb-1.5 grid grid-cols-[42px_1fr_28px] items-center gap-2 text-[12.5px]">
-                      <span className="text-ink-2">{l}</span>
-                      <span className="h-2.5 rounded-sm bg-line"><i className="block h-full rounded-sm" style={{ width: `${(n / rn) * 100}%`, background: c }} /></span>
-                      <span className="text-right font-semibold text-ink">{n}</span>
-                    </div>
-                  ))}
+                  <div className="mt-2.5 flex h-2 overflow-hidden rounded-sm" role="img" aria-label="Analyst ratings">
+                    {([["Buy", recs.strongBuy + recs.buy, "var(--c1)"], ["Hold", recs.hold, "var(--c0)"], ["Sell", recs.sell + recs.strongSell, "var(--c4)"]] as const).map(([l, n, c]) => n > 0 && <i key={l} style={{ width: `${(n / rn) * 100}%`, background: c }} title={`${l}: ${n}`} />)}
+                  </div>
+                  <div className="mt-1.5 flex gap-3 text-[12px] text-ink-3"><span>Buy {recs.strongBuy + recs.buy}</span><span>Hold {recs.hold}</span><span>Sell {recs.sell + recs.strongSell}</span></div>
                   <div className="mt-2 text-[13px] text-ink-2">Mean target {fD(st.target)} <Var v={st.up} /></div>
                 </>
-              ) : <div className="text-[13px] text-ink-3">No rating distribution available.</div>}
+              ) : <div className="mt-2 text-[13px] text-ink-3">No rating distribution available.</div>}
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
         <Card title={`Scenario ${co.fin ? "residual income" : "free cash flow"} by year`} unit={`Bear / base / bull · ${co.fin ? `target ROE ±${fP(a.sc.roe, 0)}` : `growth ±${fP(a.sc.g, 0)}, margin ±${fP(a.sc.m, 0)}`}, discount rate ∓${fP(a.sc.w, 0)}`}>
           <div className="px-2 pb-2"><Plot fig={figScenario(co, sc)} height={420} /></div>
         </Card>

@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <>
       <TitleBar
-        title="Coverage Universe"
+        title="Coverage universe"
         sub={<><span>{rows.length} featured companies</span>{u?.asOf && <span>Prices as of {dLong(u.asOf)}</span>}<span>Any SEC-registered U.S. ticker can be analyzed</span></>}
         filters={<>
           <Filter label="Ticker">
@@ -54,20 +54,16 @@ export default function Home() {
         </>}
       />
       <Content>
-        <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="kpis sm:grid-cols-2 xl:grid-cols-4">
           <Kpi title="S&P 500" unit="SPY, last close" value={fN(b?.last)} delta={<Delta v={ok(b?.last) && ok(b?.prev) ? b.last / b.prev - 1 : null} dp={2} vs="1 day" />} />
           <Kpi title="Coverage return" unit="Median 1-year total return" value={fP(medR, 1, true)} delta={<Delta v={ok(medR) && ok(b?.r1y) ? medR - b.r1y : null} vs="vs S&P 500" />} />
           <Kpi title="Coverage P/E" unit="Median, trailing twelve months" value={fX(medPE)} delta={<Delta v={null} text={`EV/EBITDA ${fX(medEV)}`} vs="non-financials" />} />
           <Kpi title="Street upside" unit="Median, to mean price target" value={fP(medUp, 1, true)} delta={<Delta v={medUp} vs={`${rows.filter((r) => ok(r.street?.up)).length} covered`} />} />
         </div>
-        <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
-          {TOOLS.map(([href, t, d]) => (
-            <Link key={href} href={href} className="group rounded-md border border-line bg-card px-4 py-3 transition-colors hover:border-accent">
-              <div className="font-semibold text-ink group-hover:text-accent">{t} <span aria-hidden="true">→</span></div>
-              <div className="text-[12.5px] text-ink-3">{d}</div>
-            </Link>
-          ))}
-        </div>
+        <p className="-mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-ink-3">
+          <span>Also in Intrinsic:</span>
+          {TOOLS.map(([href, t, d]) => <Link key={href} href={href} title={d} className="text-ink-2 underline decoration-line-2 underline-offset-2 hover:text-accent hover:decoration-accent">{t}</Link>)}
+        </p>
         {!u ? <ErrorCard title="No universe snapshot yet" message="Run npm run universe to build data/universe.json, then reload." /> : <>
           <Section>Peer groups</Section>
           <div className="grid gap-3.5 xl:grid-cols-2">

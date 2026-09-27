@@ -48,7 +48,7 @@ export default function Comps() {
   };
   return (
     <>
-      <Card title="Peer Set" unit="(add any U.S. ticker; click a peer to remove it)">
+      <Card title="Peer set" unit="(add any U.S. ticker; click a peer to remove it)">
         <div className="flex flex-wrap items-center gap-1.5 px-6 pb-4.5">
           <span className="rounded-[14px] border border-accent bg-accent px-3 py-0.5 text-[13px] font-semibold text-white">{co.tk}</span>
           {peers.map((t) => (
@@ -68,7 +68,7 @@ export default function Comps() {
         <div className="card px-6 py-8 text-center text-ink-3">{peersLoading ? "Loading peer data…" : "Add at least one peer to build the comparison."}</div>
       ) : (
         <>
-          <Card title="Trading Multiples" unit="(LTM unless noted; NTM = next twelve months consensus)">
+          <Card title="Trading multiples" unit="(LTM unless noted; NTM = next twelve months consensus)">
             <Tw>
               <table className="t dense">
                 <thead><tr><th>Company</th><th>Market cap</th>{K.map((k) => <th key={k}>{KL[k]}</th>)}<th>{fin ? "Dividend yield" : "FCF yield"}</th><th>Street upside</th></tr></thead>
@@ -87,7 +87,7 @@ export default function Comps() {
             </Tw>
             <Note>* Model-derived where no consensus EPS is available: LTM earnings grown at the 3-year revenue CAGR. Multiples above 999x or on negative denominators show as n.m.{fin && " EV-based multiples are not meaningful for financial institutions."}</Note>
           </Card>
-          <Card title="Operating Benchmarking" unit="(LTM)">
+          <Card title="Operating benchmarking" unit="(LTM)">
             <Tw>
               <table className="t dense">
                 <thead><tr><th>Company</th><th>Revenue</th>{OP.map(([k, l]) => <th key={k}>{l}</th>)}</tr></thead>
@@ -101,7 +101,7 @@ export default function Comps() {
             </Tw>
           </Card>
           <div className="grid gap-3.5 xl:grid-cols-2">
-            <Card title="Implied Value per Share" unit={`($, peer multiples applied to ${co.tk})`}>
+            <Card title="Implied value per share" unit={`($, peer multiples applied to ${co.tk})`}>
               <Tw>
                 <table className="t dense">
                   <thead><tr><th>Method</th><th>Peer median</th><th>25th pct</th><th>Median</th><th>75th pct</th><th>vs price</th></tr></thead>
@@ -115,7 +115,7 @@ export default function Comps() {
                 </table>
               </Tw>
             </Card>
-            <Card title="Valuation Summary" unit="($ per share; dashed line = current price)">
+            <Card title="Valuation summary" unit="($ per share; dashed line = current price)">
               <div className="px-3 pb-3"><Plot fig={figFootball(co, ff)} height={70 + ff.length * 40} /></div>
             </Card>
           </div>

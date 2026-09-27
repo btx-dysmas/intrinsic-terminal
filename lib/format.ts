@@ -59,3 +59,9 @@ export function fVol(v: any) {
 }
 export const fR = (v: any, k: string) => (k === "p" ? fP(v) : ok(v) ? `${v.toFixed(2)}x` : "n.m.");
 export const cls = (v: any) => (ok(v) ? (v > 0 ? "text-pos" : v < 0 ? "text-neg" : "") : "");
+
+/** "just now", "4 min ago", "2 h ago". */
+export const ago = (t: number, now = Date.now()) => {
+  const m = Math.max(0, Math.round((now - t) / 60000));
+  return m < 1 ? "just now" : m < 60 ? `${m} min ago` : `${Math.round(m / 60)} h ago`;
+};

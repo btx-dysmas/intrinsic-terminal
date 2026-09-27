@@ -109,7 +109,7 @@ export default function Valuation() {
         <div className="card self-start px-6 py-8 text-center text-ink-3">The discount rate ({fP(d.w, 2)}) must exceed terminal growth ({fP(a.tg, 2)}) for the terminal value to be defined.</div>
       ) : (
         <div className="grid content-start gap-3.5">
-          <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="kpis sm:grid-cols-2 xl:grid-cols-4">
             <Kpi title="Intrinsic value" unit="Base case, per share" value={fPS(d.ps)} delta={<Delta v={d.up} vs={`vs ${fD(co.price)}`} />} />
             <Kpi title="Bear case" unit="Per share" value={fPS(sc[0].ps)} delta={<Delta v={sc[0].up} vs="vs price" />} />
             <Kpi title="Bull case" unit="Per share" value={fPS(sc[2].ps)} delta={<Delta v={sc[2].up} vs="vs price" />} />
@@ -126,7 +126,7 @@ export default function Valuation() {
             <ValuationBands co={co} />
           </div>
           <div className="grid gap-3.5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            <Card title={co.fin ? "Residual Income Projection" : "Unlevered Free Cash Flow Projection"} unit="($m)">
+            <Card title={co.fin ? "Residual income projection" : "Unlevered free cash flow projection"} unit="($m)">
               <Tw>
                 <table className="t dense">
                   <thead><tr><th className="sticky-col">Item</th>{d.rows.map((r: any) => <th key={r.i}>{r.year}E</th>)}</tr></thead>
@@ -144,7 +144,7 @@ export default function Valuation() {
                 </table>
               </Tw>
             </Card>
-            <Card title={co.fin ? "Equity Value Bridge" : "Enterprise to Equity Bridge"}>
+            <Card title={co.fin ? "Equity value bridge" : "Enterprise to equity bridge"}>
               <KV rows={co.fin ? [
                 ["Opening book value", fB(L.eq)], ["PV of residual income", fB(d.pvSum)], ["PV of terminal value", fB(d.pvTv)], [<b key="e">Equity value</b>, <b key="ev">{fB(d.eqv)}</b>],
                 ["Shares outstanding", `${(co.shares / 1e6).toFixed(0)}M`], [<b key="p">Value per share</b>, <b key="pv">{fPS(d.ps)}</b>], ["Implied P / book", fX(d.impliedPB, 2)], ["Cost of equity applied", fP(d.w, 2)],
@@ -155,7 +155,7 @@ export default function Valuation() {
               ]} />
             </Card>
           </div>
-          <Card title={co.fin ? "Book Value and Earnings" : "Revenue and Free Cash Flow"} unit="(shaded = projected)"><div className="px-3 pb-3"><Plot fig={figValuation(co, d)} height={280} /></div></Card>
+          <Card title={co.fin ? "Book Value and Earnings" : "Revenue and free cash flow"} unit="(shaded = projected)"><div className="px-3 pb-3"><Plot fig={figValuation(co, d)} height={280} /></div></Card>
           {sg && (
             <div className="grid gap-3.5 xl:grid-cols-2">
               <Card title={`Sensitivity: ${co.fin ? "Cost of Equity" : "WACC"} vs Terminal Growth`} unit="($ per share)">{grid(sg.gs, sg.ws, sg.A, "g", co.fin ? "ke" : "WACC")}</Card>
