@@ -18,11 +18,18 @@ function Node({ x, y, w, h, title, lines, tone }: Box) {
   );
 }
 
-function Arrow({ d, label, lx, ly }: { d: string; label?: string; lx?: number; ly?: number }) {
+/** Straight arrow "M x1 y1 L x2 y2". A label sits at the midpoint, rotated to follow the line and lifted off it. */
+function Arrow({ d, label }: { d: string; label?: string }) {
+  const [x1, y1, x2, y2] = (d.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
+  let angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+  if (angle > 90) angle -= 180;
+  if (angle < -90) angle += 180;
+  const rad = (angle * Math.PI) / 180, lift = 7;
+  const mx = (x1 + x2) / 2 + Math.sin(rad) * lift, my = (y1 + y2) / 2 - Math.cos(rad) * lift;
   return (
     <g>
-      <path d={d} fill="none" stroke="var(--ink-3)" strokeWidth={1.4} markerEnd="url(#head)" />
-      {label && <text x={lx} y={ly} fontSize={11} fill="var(--ink-3)" textAnchor="middle">{label}</text>}
+      <path d={d} fill="none" stroke="var(--ink-3)" strokeWidth={1.3} markerEnd="url(#head)" />
+      {label && <text x={mx} y={my} fontSize={11} fill="var(--ink-3)" textAnchor="middle" transform={`rotate(${angle.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)})`}>{label}</text>}
     </g>
   );
 }
@@ -59,15 +66,15 @@ function Diagram() {
       {sources.map((b) => <Node key={b.title} {...b} />)}
       <Node x={800} y={392} w={240} h={92} title="GitHub" lines={["Source of truth; every push", "to main redeploys on Vercel"]} tone="muted" />
 
-      <Arrow d="M320 96 L406 87" label="fetch JSON" lx={362} ly={82} />
+      <Arrow d="M320 96 L406 87" label="fetch JSON" />
       <Arrow d="M570 124 L570 142" />
       <Arrow d="M730 190 L796 57" />
       <Arrow d="M730 200 L796 143" />
       <Arrow d="M730 210 L796 229" />
       <Arrow d="M730 222 L796 315" />
       <Arrow d="M570 274 L570 292" />
-      <Arrow d="M800 438 L734 438" label="deploy" lx={767} ly={430} />
-      <Arrow d="M406 438 L324 205" label="bundled" lx={350} ly={318} />
+      <Arrow d="M800 438 L734 438" label="deploy" />
+      <Arrow d="M406 438 L324 205" label="bundled" />
     </svg>
   );
 }
