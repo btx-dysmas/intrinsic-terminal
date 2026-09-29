@@ -274,4 +274,4 @@ Intrinsic is an educational project. Its models are quantitative screens, not in
 ## Author
 
 **Noah Williams** (Dysmas Anastasiou)
-Email: nwfootball07@gmail.com
+Email: noah.w.williams@protonmail.com
