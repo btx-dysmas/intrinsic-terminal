@@ -66,6 +66,14 @@ I deployed to Vercel with the SEC identity and FRED key as environment variables
 
 Wrote this log, [ARCHITECTURE.md](ARCHITECTURE.md) and [DECISIONS.md](DECISIONS.md), and rewrote the README to lead with what the project is and why it matters.
 
+## Phase 9: Segments and fund look-through
+
+Two items had sat on the roadmap as "planned with free API keys". When I looked again, the free tiers of Financial Modeling Prep and Finnhub no longer included segment data or transcripts, so I went back to the SEC.
+
+Segment revenue isn't in the company-facts API at all, because it drops every fact that has a dimension. It is in each 10-K's XBRL instance, so Intrinsic now reads that directly. The hard part was that companies tag the same revenue in overlapping ways. Microsoft and Amazon each report two complete product breakdowns on one axis, so their shares first added up to 200%. Apple reports Products next to iPhone, Mac and iPad. NVIDIA's small OEM line happened to fit Data Center's subtotal within rounding until I required the sum to hold in the prior year too. When a company reorganizes, older 10-Ks describe different segments under the same names, so history stops where an older filing disagrees with a recast one.
+
+The portfolio builder now looks through funds using each fund's latest Form N-PORT, which lists every position. SPY is a unit investment trust and doesn't file N-PORT, so it falls back to Yahoo's top ten holdings, and the page says so. Company names differ between sources ("Microsoft Corp" and "Microsoft Corporation"), so exposure is matched on names with punctuation, legal suffixes and share classes removed. One surprise: VNQ files its holding in another Vanguard fund as ordinary equity, so positions named as funds are excluded from company exposure.
+
 ---
 
 ## What I learned

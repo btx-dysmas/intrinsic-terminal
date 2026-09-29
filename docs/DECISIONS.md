@@ -117,3 +117,13 @@ Each decision below records the situation, what I chose, what I considered inste
 **Decision.** Evict failed promises from the in-memory cache; mark any macro response without data `no-store`; trim environment variables; surface upstream error messages.
 
 **Consequences.** Configuration mistakes are visible and fix themselves as soon as the configuration is corrected.
+
+### 15. Segments and fund holdings from SEC filings, not a paid API
+
+**Context.** The roadmap listed Financial Modeling Prep or Finnhub for segment revenue and earnings-call transcripts. Their free tiers no longer include either, and like other hosted APIs they don't show how a figure was derived. The SEC's company-facts API has no segment data because it omits every dimensional fact.
+
+**Decision.** Read segments from the XBRL instance of each 10-K: contexts with exactly one segment, product or geography member, full fiscal years only, labeled with the company's own names from MetaLinks.json. Read fund holdings from each fund's latest Form N-PORT. Leave transcripts out, since there is no free and reliable source.
+
+**Alternatives.** A paid data plan, which conflicts with running for free. Parsing the segment note's HTML table, which every company lays out differently.
+
+**Consequences.** More parsing work: companies tag the same revenue in overlapping ways, so the members of each breakdown are checked against total revenue, subtotals are nested only when they hold in two consecutive years, and history stops where an older 10-K disagrees with a recast one. In return, every segment figure links to a filing and an XBRL concept, and the whole project still uses only public data.

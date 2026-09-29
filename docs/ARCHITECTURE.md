@@ -84,6 +84,8 @@ The TypeScript port was checked against the original Python implementation on th
 | Source | Client | Notes |
 |---|---|---|
 | **SEC EDGAR** | `lib/server/sec.ts` | A declared `User-Agent` on every request (SEC requirement); a queue spacing requests 110 ms apart (under the 10 requests/second fair-access limit); three attempts with growing backoff; 404 mapped to a clean "not found". |
+| **10-K XBRL instances** | `lib/server/segments.ts` | Reads each of the last three 10-Ks' XBRL instance and MetaLinks.json. Keeps full-year contexts with exactly one segment, product or geography member, separates overlapping breakdowns, nests subtotals, and prefers recast figures from newer filings. |
+| **SEC Form N-PORT** | `lib/server/nport.ts` | Finds a fund's series in the SEC's fund ticker list, reads its latest N-PORT and keeps each position's weight. Unit investment trusts such as SPY don't file N-PORT and fall back to Yahoo's top ten holdings. |
 | **SEC Form 4** | `insiders()` | Reads each filing's XML: owner, role, transaction code, shares, price, shares owned after. Open-market purchases (P) and sales (S) are separated from grants and exercises. |
 | **Yahoo Finance** | `lib/server/yahoo.ts` | Chart API (no authentication) for prices; `quoteSummary` needs a session cookie from `fc.yahoo.com` and a matching crumb, refreshed hourly or on a 401/403. Every field is optional. |
 | **FRED** | `lib/server/macro.ts` | Nine series since 2007; CPI converted to year-over-year; daily series thinned to weekly points. The key is trimmed of stray whitespace. |
@@ -145,6 +147,8 @@ app/
   api/company/[ticker]/route.ts   company payload (maxDuration 60 s)
   api/company/[ticker]/filings    recent filings
   api/company/[ticker]/insiders   Form 4 transactions
+  api/company/[ticker]/segments   segment revenue from 10-K XBRL
+  api/lookthrough                 fund holdings from N-PORT
   api/company/[ticker]/news       headlines
   api/prices, macro, search, health
   company/[ticker]/layout.tsx     loads the company, derives assumptions, shares context

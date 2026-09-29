@@ -14,13 +14,13 @@ Instead of relying on proprietary terminals or paid APIs, Intrinsic uses transpa
 
 | | |
 |---|---|
-| **Scope** | 16 pages, including 9 views per company, from statements to a written research report |
-| **Code** | About 5,400 lines of TypeScript across 59 files, written from scratch |
-| **Data** | 6 live public sources: SEC EDGAR, SEC Form 4, Yahoo Finance, FRED, the U.S. Treasury and the Federal Reserve |
+| **Scope** | 17 pages, including 10 views per company, from statements and segments to a written research report |
+| **Code** | About 5,600 lines of TypeScript across 62 files, written from scratch |
+| **Data** | Live public sources only: SEC EDGAR (XBRL, Form 4 and N-PORT filings), Yahoo Finance, FRED, the U.S. Treasury and the Federal Reserve |
 | **Models** | Unlevered DCF, residual income, scenario and sensitivity analysis, peer multiples, a six-factor rating, Monte Carlo retirement, portfolio risk and economic regime classification |
-| **Parsing** | A custom SEC XBRL normalizer covering about 80 financial concepts, plus a Form 4 insider-trade parser |
+| **Parsing** | A custom SEC XBRL normalizer covering about 80 financial concepts, a dimensional XBRL reader for segment revenue, and parsers for Form 4 insider trades and N-PORT fund holdings |
 | **Cost to run** | $0: GitHub and Vercel's free tier, no database, no paid APIs, no AI model |
-| **Documentation** | [Architecture](docs/ARCHITECTURE.md), [14 design decisions](docs/DECISIONS.md) and a [development log](docs/DEVLOG.md) |
+| **Documentation** | [Architecture](docs/ARCHITECTURE.md), [15 design decisions](docs/DECISIONS.md) and a [development log](docs/DEVLOG.md) |
 
 ## What happens when you type a ticker
 
@@ -62,7 +62,9 @@ Intrinsic is the biggest of those projects. I built it to explore software engin
 ## Technical highlights
 
 - **Normalized SEC XBRL filings into a common data model.** Raw tagged facts become annual, quarterly and trailing-twelve-month statements, with year-to-date differencing, tag fallbacks, restatement handling and merged predecessor filers.
+- **Extracted segment revenue directly from 10-K XBRL.** The SEC's company-facts API leaves out dimensional data, so segment, product-line and geographic revenue and segment operating income are read from each filing's XBRL instance. Overlapping tags are separated (Apple reports Products alongside iPhone, Mac and iPad), and older years are dropped when a company reorganizes its segments.
 - **Parsed SEC Form 4 filings** into insider transactions, separating open-market buying and selling from compensation events.
+- **Looked through funds with SEC N-PORT filings,** so the portfolio builder adds up exposure to each underlying company across direct holdings and every fund.
 - **Built a valuation engine that runs in the browser:** an unlevered DCF for operating companies and a residual income model for banks and insurers. It uses a CAPM discount rate from the live 10-year Treasury yield, scenario analysis and sensitivity grids.
 - **Wrote a deterministic research-note generator** and a six-factor Buy/Hold/Sell rating. Every sentence is built from a computed figure.
 - **Implemented a Monte Carlo retirement simulator** with correlated asset returns (Cholesky factorization, seeded random numbers) and a portfolio risk engine (Sharpe, Sortino, VaR, CVaR, risk contribution).
@@ -77,13 +79,14 @@ Intrinsic is the biggest of those projects. I built it to explore software engin
 |---|---|
 | **Company analysis** | Search any SEC-registered U.S. ticker. Get the overview, 52-week range, analyst consensus, earnings dates and surprises, and a company profile. |
 | **Financial statements** | Income statement, balance sheet and cash flow built from raw XBRL filings. Annual and quarterly, plus trailing twelve months. |
+| **Segments** | Revenue and operating margin by reportable segment, product line and region for up to five years, read from the XBRL in the last three 10-Ks. |
 | **Ratio analysis** | Profitability, returns, liquidity, leverage, efficiency and per-share trends. Nonsense values (such as margins of -50,000% for pre-revenue companies) are flagged instead of plotted. |
 | **Valuation model** | DCF and residual income models with bull, base and bear scenarios, sensitivity grids, a margin-of-safety slider, and historical P/E, EV/EBITDA and P/S bands. Every assumption can be edited. |
 | **Peer benchmarking** | Peer multiples and operating metrics against a peer set you can change. |
 | **Risk and technicals** | Beta, volatility, drawdowns, Sharpe and Sortino, VaR, moving averages, RSI, MACD and volume. |
 | **Filings and insiders** | Recent 10-K, 10-Q and 8-K filings with direct links, plus Form 4 insider trades with net buying and selling. |
 | **Research report** | Rules-based note covering business, positioning, growth, financials, valuation, risks and thesis, with a six-factor rating. Exports as a one-page tear sheet or a full PDF report. |
-| **Portfolio builder** | Preset or custom allocations. See position sizing, return and risk contribution, the correlation matrix, and asset-class and sector exposure against the S&P 500. |
+| **Portfolio builder** | Preset or custom allocations. See position sizing, return and risk contribution, the correlation matrix, asset-class and sector exposure against the S&P 500, and look-through exposure to the companies inside each fund. |
 | **Retirement simulator** | 5,000-path Monte Carlo that estimates the chance your savings last, shows best and worst cases, and finds the savings rate you need. |
 | **Macro and regime** | Classifies the economy as Expansion, Recovery, Slowdown, Recession or Stagflation, and shows what each regime has meant for stocks, bonds, real assets and sectors. |
 | **Screener** | A 42-company coverage universe across 10 industries, sortable and comparable side by side. |
@@ -100,6 +103,8 @@ Intrinsic is the biggest of those projects. I built it to explore software engin
 | **Research report:** rules-based note and rating scorecard | **Macro dashboard:** economic regime, implications and the Treasury curve |
 | ![Portfolio builder](docs/screenshots/portfolio.png) | ![Retirement simulator](docs/screenshots/retirement.png) |
 | **Portfolio builder:** risk metrics, drawdown and position sizing | **Retirement simulator:** Monte Carlo probability of success |
+| ![Segments](docs/screenshots/segments.png) | ![Architecture](docs/screenshots/architecture.png) |
+| **Segments:** revenue and margins by segment, read from 10-K XBRL | **Architecture:** how data flows from public sources to the browser |
 
 ---
 
@@ -165,13 +170,13 @@ The full write-up, including the request lifecycle, the XBRL pipeline step by st
 | Source | Used for | Status |
 |---|---|---|
 | SEC EDGAR (XBRL company facts, submissions) | Financial statements, filing history, company metadata | ✅ Live |
+| SEC 10-K XBRL instances | Segment, product-line and geographic revenue and segment operating income | ✅ Live |
 | SEC Form 4 | Insider buys, sells and holdings | ✅ Live |
 | Yahoo Finance | Prices, profile, analyst estimates, earnings calendar and surprises, news RSS | ✅ Live |
 | FRED | Risk-free rate, CPI, GDP, unemployment, credit spreads, VIX | ✅ Live (free key) |
 | U.S. Treasury | Daily par yield curve | ✅ Live |
 | Federal Reserve | Press releases (RSS) | ✅ Live |
-| Financial Modeling Prep, Finnhub | Segment data, transcripts, more estimates | 🔜 Planned (free keys) |
-| SEC N-PORT, ETF holdings | Fund look-through for the portfolio builder | 🔜 Planned |
+| SEC Form N-PORT | Complete fund holdings for portfolio look-through (Yahoo's top ten for funds that don't file it) | ✅ Live |
 
 ---
 
@@ -260,8 +265,7 @@ data/                universe.json (generated)
 
 ## Roadmap
 
-- Segment revenue and earnings-call transcripts (Financial Modeling Prep or Finnhub free tiers)
-- ETF look-through in the portfolio builder (SEC N-PORT)
+- Segment commentary in the research note
 - Saved watchlists shared by URL
 - More peer groups in the coverage universe
 

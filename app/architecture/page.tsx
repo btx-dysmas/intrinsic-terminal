@@ -36,7 +36,7 @@ function Arrow({ d, label }: { d: string; label?: string }) {
 
 function Diagram() {
   const sources: Box[] = [
-    { x: 800, y: 20, w: 240, h: 74, title: "SEC EDGAR", lines: ["XBRL company facts, submissions,", "Form 4 insider filings"], tone: "source" },
+    { x: 800, y: 20, w: 240, h: 74, title: "SEC EDGAR", lines: ["XBRL facts and 10-K instances,", "Form 4 and N-PORT filings"], tone: "source" },
     { x: 800, y: 106, w: 240, h: 74, title: "Yahoo Finance", lines: ["Daily prices, profile, estimates,", "earnings history, RSS headlines"], tone: "source" },
     { x: 800, y: 192, w: 240, h: 74, title: "FRED", lines: ["Rates, inflation, GDP, labor,", "credit spreads, VIX"], tone: "source" },
     { x: 800, y: 278, w: 240, h: 74, title: "U.S. Treasury + Federal Reserve", lines: ["Par yield curve (CSV),", "press releases (RSS)"], tone: "source" },
