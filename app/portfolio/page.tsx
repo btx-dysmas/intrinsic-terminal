@@ -5,7 +5,7 @@ import { Content, Section, TitleBar } from "@/components/Shell";
 import { Card, ErrorCard, Kpi, Loading, Note, Seg, Tw } from "@/components/ui";
 import { api, getMacro } from "@/lib/api";
 import { figCorr, figDrawdowns, figGrowth, figShares, PAL } from "@/lib/charts";
-import { cls, fB, fD, fN, fP, ok } from "@/lib/format";
+import { cls, dLong, fB, fD, fN, fP, ok } from "@/lib/format";
 import { analyze, PRESETS, type Holding } from "@/lib/portfolio";
 
 const KEY = "irt-portfolio";
@@ -17,6 +17,90 @@ function load(): { holdings: Holding[]; value: number } {
     if (Array.isArray(s.holdings)) return s;
   } catch {}
   return { holdings: PRESETS["Balanced 40/30/20/10"], value: 100000 };
+}
+
+// Company names differ between sources ("Amazon.com Inc" in N-PORT, "Amazon.com, Inc." from Yahoo);
+// compare them without punctuation, legal suffixes or share classes.
+const SUFFIX = /\b(inc|incorporated|corp|corporation|co|company|ltd|limited|plc|the|class [a-c]|cl [a-c]|n ?v|ag|sa|se|holdings?)\b/g;
+const normName = (s: string) => s.toLowerCase().replace(/[.,'’&]/g, "").replace(/-/g, " ").replace(SUFFIX, " ").replace(/\s+/g, " ").trim();
+const tidyName = (s: string) => {
+  const t = s.replace(/\s+(class|cl)\s+[a-c]$/i, "").trim();
+  return t === t.toUpperCase() ? t.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : t;
+};
+
+type LT = { symbol: string; source: string | null; period: string | null; count: number; coverage: number; positions: { name: string; weight: number; equity: boolean }[] };
+
+/** Underlying company exposure: direct stock holdings plus each fund's weight times its holdings. */
+function LookThrough({ positions, series, value }: { positions: { symbol: string; name: string; weight: number }[]; series: Record<string, { type?: string | null }>; value: number }) {
+  const funds = positions.filter((p) => ["ETF", "MUTUALFUND"].includes(series[p.symbol]?.type ?? "")).map((p) => p.symbol).sort().join(",");
+  const [lt, setLt] = useState<Record<string, LT> | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => {
+    if (!funds) { setLt({}); return; }
+    let alive = true;
+    setLt(null);
+    setErr(null);
+    api<Record<string, LT>>(`/lookthrough?symbols=${encodeURIComponent(funds)}`).then((d) => alive && setLt(d)).catch((e) => alive && setErr(e.message));
+    return () => { alive = false; };
+  }, [funds]);
+
+  const rows = useMemo(() => {
+    if (!lt) return [];
+    const m = new Map<string, { name: string; direct: number; via: Record<string, number> }>();
+    const add = (name: string, w: number, via?: string) => {
+      const k = normName(name);
+      if (!k) return;
+      const e = m.get(k) ?? { name: tidyName(name), direct: 0, via: {} };
+      if (via) e.via[via] = (e.via[via] ?? 0) + w;
+      else { e.direct += w; e.name = tidyName(name); }
+      m.set(k, e);
+    };
+    for (const p of positions) {
+      const f = lt[p.symbol];
+      if (f?.source) f.positions.filter((x) => x.equity).forEach((x) => add(x.name, p.weight * x.weight, p.symbol));
+      else if (series[p.symbol]?.type === "EQUITY") add(p.name, p.weight);
+    }
+    return [...m.values()].map((e) => ({ ...e, total: e.direct + Object.values(e.via).reduce((s, v) => s + v, 0) })).sort((a, b) => b.total - a.total);
+  }, [lt, positions, series]);
+
+  if (!funds && positions.every((p) => series[p.symbol]?.type === "EQUITY")) return null;
+  const fundList = funds ? funds.split(",") : [];
+  const top10 = rows.slice(0, 10).reduce((s, r) => s + r.total, 0);
+  const overlap = rows.filter((r) => (r.direct > 0 ? 1 : 0) + Object.keys(r.via).length >= 2).length;
+  return (
+    <Card title="Look-through exposure" unit="Underlying companies across direct holdings and funds">
+      {err ? <div className="px-5 pb-5"><ErrorCard title="Fund holdings unavailable" message={err} /></div> : !lt ? <Loading text="Reading fund holdings from SEC N-PORT filings" /> : <>
+        <div className="grid gap-4 px-5 pb-3 sm:grid-cols-3">
+          <div><div className="card-sub">Largest single company</div><div className="text-[20px] font-semibold">{rows[0] ? `${rows[0].name} · ${fP(rows[0].total, 1)}` : "—"}</div></div>
+          <div><div className="card-sub">Ten largest companies</div><div className="text-[20px] font-semibold">{fP(top10, 1)} of the portfolio</div></div>
+          <div><div className="card-sub">Held in more than one place</div><div className="text-[20px] font-semibold">{overlap} {overlap === 1 ? "company" : "companies"}</div></div>
+        </div>
+        <Tw>
+          <table className="t">
+            <thead><tr><th className="l">Company</th><th>Direct</th><th className="l">Through funds</th><th>Total exposure</th><th>Amount</th></tr></thead>
+            <tbody>
+              {rows.slice(0, 15).map((r) => (
+                <tr key={r.name}>
+                  <td className="l">{r.name}</td>
+                  <td>{r.direct ? fP(r.direct, 2) : "—"}</td>
+                  <td className="l text-ink-2">{Object.entries(r.via).sort((a, b) => b[1] - a[1]).map(([s, w]) => `${s} ${fP(w, 2)}`).join(", ") || "—"}</td>
+                  <td className="font-semibold">{fP(r.total, 2)}</td>
+                  <td>{fD(r.total * value, 0)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Tw>
+        <Note>
+          {fundList.map((s) => {
+            const f = lt[s];
+            return !f?.source ? `${s}: holdings not available` : f.source === "N-PORT" ? `${s}: ${f.count.toLocaleString("en-US")} positions from its N-PORT filing${f.period ? ` for ${dLong(f.period)}` : ""}` : `${s}: top ${f.count} holdings only (${fP(f.coverage, 0)} of the fund), because it does not file N-PORT`;
+          }).join(" · ")}
+          {fundList.length ? ". " : ""}Bond, cash and commodity positions inside funds are not counted as company exposure.
+        </Note>
+      </>}
+    </Card>
+  );
 }
 
 export default function Portfolio() {
@@ -165,6 +249,7 @@ export default function Portfolio() {
               <div className="px-2 pb-2"><Plot fig={figCorr(r.positions.map((p) => p.symbol), r.corr)} height={Math.max(220, r.positions.length * 42 + 60)} /></div>
             </Card>
           </div>
+          <LookThrough positions={r.positions} series={data.series} value={value} />
           {missing.length > 0 && <Card><Note>No price history found for {missing.join(", ")}; excluded from the analysis.</Note></Card>}
         </>}
       </Content>

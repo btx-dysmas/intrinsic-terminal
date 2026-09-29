@@ -113,6 +113,16 @@ export function classify(symbol: string) {
   });
 }
 
+/** A fund's ten largest holdings, for funds that don't file N-PORT with the SEC. */
+export function topHoldings(symbol: string) {
+  return memo(`yf:top:${symbol}`, 24 * HOUR, async () => {
+    const q = await quoteSummary(symbol, ["topHoldings"]);
+    return (q?.topHoldings?.holdings ?? [])
+      .map((h: any) => ({ name: h.holdingName ?? h.symbol ?? "", symbol: h.symbol ?? null, weight: num(h.holdingPercent) ?? 0 }))
+      .filter((h: { weight: number }) => h.weight > 0) as { name: string; symbol: string | null; weight: number }[];
+  });
+}
+
 const decode = (s: string) => s.replace(/<!\[CDATA\[|\]\]>/g, "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").trim();
 
 export async function rss(url: string, limit = 8) {
