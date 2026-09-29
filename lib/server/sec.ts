@@ -12,7 +12,7 @@ function throttle() {
   return next;
 }
 
-async function secFetch(url: string): Promise<Response> {
+export async function secFetch(url: string): Promise<Response> {
   let last = "";
   for (let attempt = 0; attempt < 3; attempt++) {
     await throttle();

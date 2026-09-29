@@ -14,6 +14,7 @@ const ICON: Record<string, ReactNode> = {
   architecture: <><rect x="3" y="3.5" width="7" height="5" rx="1" /><rect x="14" y="3.5" width="7" height="5" rx="1" /><rect x="8.5" y="15.5" width="7" height="5" rx="1" /><path d="M6.5 8.5v3.5h11V8.5M12 12v3.5" /></>,
   overview: <><rect x="3" y="3" width="7.5" height="7.5" rx="1" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="1" /><rect x="3" y="13.5" width="7.5" height="7.5" rx="1" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1" /></>,
   financials: <><rect x="3.5" y="3.5" width="17" height="17" rx="1.5" /><path d="M3.5 9h17M3.5 14.5h17M9.5 9v11.5" /></>,
+  segments: <><path d="M12 3a9 9 0 1 0 9 9h-9z" /><path d="M14.5 2.8A9 9 0 0 1 21.2 9.5h-6.7z" /></>,
   filings: <><path d="M4 4h10l6 6v10H4z" /><path d="M14 4v6h6M8 14h8M8 17.5h5" /></>,
   ratios: <><path d="M5 19 19 5" /><circle cx="7" cy="7" r="2.5" /><circle cx="17" cy="17" r="2.5" /></>,
   valuation: <><rect x="5" y="2.5" width="14" height="19" rx="1.5" /><path d="M8 6.5h8M8 11h.01M12 11h.01M16 11h.01M8 14.5h.01M12 14.5h.01M16 14.5h.01M8 18h.01M12 18h4" /></>,
@@ -24,7 +25,7 @@ const ICON: Record<string, ReactNode> = {
   help: <><circle cx="12" cy="12" r="9" /><path d="M9.6 9.2a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.5M12 17h.01" /></>,
 };
 export const COMPANY_VIEWS: [string, string][] = [
-  ["overview", "Overview"], ["financials", "Financial statements"], ["filings", "Filings & insiders"], ["ratios", "Ratio analysis"], ["valuation", "Valuation model"],
+  ["overview", "Overview"], ["financials", "Financial statements"], ["segments", "Segments"], ["filings", "Filings & insiders"], ["ratios", "Ratio analysis"], ["valuation", "Valuation model"],
   ["comps", "Comparable companies"], ["risk", "Risk & return"], ["technicals", "Technical analysis"], ["report", "Research report"],
 ];
 

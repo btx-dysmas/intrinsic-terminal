@@ -375,3 +375,36 @@ export function figWealthHist(values: number[]): Fig {
   lay.bargap = 0.04;
   return { data: [{ type: "histogram", x: values.filter((v) => v <= cap), nbinsx: 40, marker: { color: PAL.c2 }, hovertemplate: "%{y} runs<extra></extra>" }], layout: lay };
 }
+
+// ---- Segments -------------------------------------------------------------
+type SegBreakdown = { years: string[]; rows: { label: string; parent: string | null; revenue: (number | null)[]; operatingIncome: (number | null)[] | null }[] };
+const SEG_COLORS = [PAL.c1, PAL.c2, PAL.c3, PAL.c4, PAL.ink3, PAL.b1, PAL.b3, PAL.c0];
+const fyLabel = (end: string) => `FY${end.slice(0, 4)}`;
+
+/** Revenue by segment, stacked when the segments add up to the total. */
+export function figSegments(b: SegBreakdown, stacked: boolean): Fig {
+  const top = b.rows.filter((r) => !r.parent).slice(0, 8);
+  const x = b.years.map(fyLabel);
+  return {
+    data: top.map((r, i) => ({
+      type: "bar", name: r.label, x, y: r.revenue.map((v) => (ok(v) ? v / 1e9 : null)), marker: { color: SEG_COLORS[i % SEG_COLORS.length] },
+      hovertemplate: `${r.label}: $%{y:,.1f}B<extra></extra>`,
+    })),
+    layout: { ...base({ yPrefix: "$", ySuffix: "B", barmode: stacked ? "stack" : "group" }), legend: { ...base().legend, traceorder: "normal" } },
+  };
+}
+
+/** Operating margin by segment. */
+export function figSegmentMargins(b: SegBreakdown): Fig {
+  const top = b.rows.filter((r) => !r.parent && r.operatingIncome).slice(0, 8);
+  const x = b.years.map(fyLabel);
+  return {
+    data: top.map((r, i) => ({
+      type: "scatter", mode: "lines+markers", name: r.label, x,
+      y: r.revenue.map((v, k) => (ok(v) && v && ok(r.operatingIncome![k]) ? (r.operatingIncome![k]! / v) * 100 : null)),
+      line: { color: SEG_COLORS[i % SEG_COLORS.length], width: 2 }, marker: { size: 6 },
+      hovertemplate: `${r.label}: %{y:.1f}%<extra></extra>`,
+    })),
+    layout: base({ ySuffix: "%" }),
+  };
+}
