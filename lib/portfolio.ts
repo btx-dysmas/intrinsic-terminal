@@ -42,9 +42,10 @@ export function analyze(holdings: Holding[], data: { dates: string[]; bench: (nu
   const drawdown = (g: number[]) => { let pk = -Infinity; return g.map((v) => { pk = Math.max(pk, v); return v / pk - 1; }); };
   const stats = (r: number[], g: number[]) => {
     const ann = (g[g.length - 1] / g[0]) ** (1 / yrs) - 1, vol = sd(r) * Math.sqrt(252);
-    const down = Math.sqrt(r.reduce((s, x) => s + Math.min(0, x - rf / 252) ** 2, 0) / r.length) * Math.sqrt(252);
+    const rfd = (1 + rf) ** (1 / 252) - 1, excess = (mean(r)! - rfd) * 252;
+    const down = Math.sqrt(r.reduce((s, x) => s + Math.min(0, x - rfd) ** 2, 0) / r.length) * Math.sqrt(252);
     const sorted = [...r].sort((a, b) => a - b), k = Math.floor(0.05 * r.length);
-    return { ann, vol, sharpe: (ann - rf) / vol, sortino: (ann - rf) / down, mdd: Math.min(...drawdown(g)), var95: -sorted[k], cvar95: -mean(sorted.slice(0, k + 1))!, cum: g[g.length - 1] / g[0] - 1 };
+    return { ann, vol, sharpe: excess / vol, sortino: excess / down, mdd: Math.min(...drawdown(g)), var95: -sorted[k], cvar95: -mean(sorted.slice(0, k + 1))!, cum: g[g.length - 1] / g[0] - 1 };
   };
   const cov = (a: number[], b: number[]) => { const ma = mean(a)!, mb = mean(b)!; return a.reduce((s, x, i) => s + (x - ma) * (b[i] - mb), 0) / (a.length - 1); };
   const varP = cov(port, port), varB = cov(bench, bench);

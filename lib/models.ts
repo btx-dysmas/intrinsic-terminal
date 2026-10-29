@@ -63,7 +63,10 @@ export function dcf(co: Co, a: Assumptions): any {
     rows.push({ i, year: +L.end.slice(0, 4) + i, g, rev, m, ebit, ebitda: ebit + da, tax, nopat, da, capex, dnwc, fcf, df, pv, flow: fcf });
   }
   const last = rows[N - 1], valid = w > a.tg + 0.001;
-  const tv = valid ? (last.fcf * (1 + a.tg)) / (w - a.tg) : null, pvTv = valid ? tv! / (1 + w) ** N : null;
+  // Terminal cash flow for year N + 1: everything grows at the terminal rate, and working capital is rebuilt only for
+  // that growth, not for the final forecast year's.
+  const fcfT = (last.nopat + last.da - last.capex) * (1 + a.tg) - last.rev * a.tg * a.nwcPct;
+  const tv = valid ? fcfT / (w - a.tg) : null, pvTv = valid ? tv! / (1 + w) ** N : null;
   const ev = valid ? pvSum + pvTv! : null, eqv = valid ? ev! - L.netDebt : null;
   // Shareholders cannot be worth less than zero: a negative equity value means the model is not meaningful.
   const nm = valid && eqv! <= 0, ps = valid && !nm ? eqv! / co.shares : null;

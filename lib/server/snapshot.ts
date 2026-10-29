@@ -35,7 +35,9 @@ function windowStats(a: (number | null)[], m: (number | null)[], n: number) {
   if (px.length < 30) return null;
   const r = px.slice(1).map((p, i) => p[0] / px[i][0] - 1);
   const cum = px[px.length - 1][0] / px[0][0] - 1, ann = (1 + cum) ** (252 / r.length) - 1, vol = stdev(r) * Math.sqrt(252);
-  return { cum, ann, vol, sharpe: vol ? (ann - RF) / vol : null };
+  // Sharpe: annualized mean daily return over the T-bill rate, divided by annualized volatility.
+  const excess = (mean(r)! - ((1 + RF) ** (1 / 252) - 1)) * 252;
+  return { cum, ann, vol, sharpe: vol ? excess / vol : null };
 }
 
 /** Map Yahoo's "current year" and "next year" consensus onto fiscal years after the last 10-K. */

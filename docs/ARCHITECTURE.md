@@ -110,7 +110,7 @@ Three layers keep the system fast and inside free-tier limits:
 
 - **Defaults.** Revenue growth starts at Street consensus for the next two fiscal years (falling back to history) and fades linearly to a terminal rate; operating margin converges from last-twelve-months to a five-year normalized level; for unprofitable companies the target margin defaults to 8% over ten years. Tax rate is the median effective rate; capex is its three-year average share of revenue (set equal to D&A when a company doesn't tag capex).
 - **Discount rate.** CAPM: cost of equity = risk-free (live 10-year Treasury) + β × 5% equity risk premium; WACC blends in after-tax cost of debt at market weights, with a floor of 7% (8% for financials).
-- **Operating companies.** Unlevered DCF: FCFF = EBIT × (1 − t) + D&A − capex − ΔNWC, Gordon terminal value, optional mid-year discounting. Equity = EV − debt + cash and short-term investments.
+- **Operating companies.** Unlevered DCF: FCFF = EBIT × (1 − t) + D&A − capex − ΔNWC, Gordon terminal value on the year N + 1 cash flow (working capital rebuilt only for terminal growth), optional mid-year discounting. Equity = EV − debt + cash and short-term investments.
 - **Financial institutions.** Residual income: value = book value + PV of (ROE − cost of equity) × opening book value, with book growing at retained earnings.
 - **Scenarios and sensitivities.** Bull and bear cases shift growth, margin and discount rate together; grids vary one pair at a time.
 - **Not meaningful.** If projected equity value is zero or negative, per-share value is reported as "n.m." with an explanation, rather than a misleading negative price.

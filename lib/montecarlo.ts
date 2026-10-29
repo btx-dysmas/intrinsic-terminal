@@ -40,7 +40,11 @@ function normals(rand: () => number) {
   return [r * Math.cos(2 * Math.PI * v), r * Math.sin(2 * Math.PI * v)];
 }
 
-const pct = (sorted: number[], p: number) => sorted[Math.min(sorted.length - 1, Math.max(0, Math.round(p * (sorted.length - 1))))];
+/** Percentile of sorted values, interpolating linearly between ranks. */
+const pct = (sorted: ArrayLike<number>, p: number) => {
+  const pos = Math.min(1, Math.max(0, p)) * (sorted.length - 1), i = Math.floor(pos), j = Math.min(i + 1, sorted.length - 1);
+  return sorted[i] + (sorted[j] - sorted[i]) * (pos - i);
+};
 
 export function simulate(p: Plan, seed = 7) {
   const years = Math.max(1, p.endAge - p.age), L = cholesky(CORR), rand = mulberry32(seed);
@@ -84,7 +88,7 @@ export function simulate(p: Plan, seed = 7) {
   const qs = [0.05, 0.25, 0.5, 0.75, 0.95], bands: number[][] = qs.map(() => []);
   ages.forEach((_, y) => {
     const col = Float64Array.from(paths, (x) => x[y]).sort();
-    qs.forEach((q, i) => bands[i].push(col[Math.round(q * (col.length - 1))]));
+    qs.forEach((q, i) => bands[i].push(pct(col, q)));
   });
   const retireIdx = Math.min(years, Math.max(0, p.retireAge - p.age));
   const atRetire = paths.map((x) => x[retireIdx]).sort((a, b) => a - b);

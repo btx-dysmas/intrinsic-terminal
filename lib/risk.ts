@@ -29,7 +29,9 @@ export function risk(co: Co, n: number, rf = RF_DEFAULT) {
     vr += (r[i] - mr) ** 2;
   }
   const beta = cov / vm, corr = cov / Math.sqrt(vm * vr);
-  const rfd = rf / 252, dd = Math.sqrt(r.reduce((s, x) => s + Math.min(0, x - rfd) ** 2, 0) / N) * Math.sqrt(252);
+  // Ratios use annualized arithmetic means of daily returns, the standard definitions; CAGR is shown separately.
+  const rfd = (1 + rf) ** (1 / 252) - 1, dd = Math.sqrt(r.reduce((s, x) => s + Math.min(0, x - rfd) ** 2, 0) / N) * Math.sqrt(252);
+  const ex = (mr - rfd) * 252, mex = (mm - rfd) * 252, active = (mr - mm) * 252;
   const srt = [...r].sort((x, y) => x - y), k = Math.floor(0.05 * N);
   const te = sd(r.map((x, i) => x - m[i])) * Math.sqrt(252);
   const mdd = (t: 1 | 2) => {
@@ -43,9 +45,9 @@ export function risk(co: Co, n: number, rf = RF_DEFAULT) {
   const up = r.filter((_, i) => m[i] > 0), dn = r.filter((_, i) => m[i] < 0);
   return {
     n: N, start: al[0][0], end: al[al.length - 1][0], cum, mcum, ann, mann, vol, mvol, beta, corr,
-    sharpe: (ann - rf) / vol, msharpe: (mann - rf) / mvol, sortino: (ann - rf) / dd,
+    sharpe: ex / vol, msharpe: mex / mvol, sortino: ex / dd,
     var95: -srt[k], cvar95: -mean(srt.slice(0, k + 1))!, pvar95: -(mr - 1.645 * sd(r)),
-    mdd: mdd(1), mmdd: mdd(2), alpha: ann - (rf + beta * (mann - rf)), te, ir: (ann - mann) / te,
+    mdd: mdd(1), mmdd: mdd(2), alpha: ex - beta * mex, te, ir: active / te,
     upCap: mean(up)! / mean(m.filter((x) => x > 0))!, dnCap: mean(dn)! / mean(m.filter((x) => x < 0))!,
     series: al, rets: r,
   };
