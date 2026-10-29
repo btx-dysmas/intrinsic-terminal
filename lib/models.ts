@@ -66,7 +66,8 @@ export function dcf(co: Co, a: Assumptions): any {
   // Terminal cash flow for year N + 1: everything grows at the terminal rate, and working capital is rebuilt only for
   // that growth, not for the final forecast year's.
   const fcfT = (last.nopat + last.da - last.capex) * (1 + a.tg) - last.rev * a.tg * a.nwcPct;
-  const tv = valid ? fcfT / (w - a.tg) : null, pvTv = valid ? tv! / (1 + w) ** N : null;
+  // With mid-year discounting the perpetuity's flows also arrive mid-year, so it is discounted half a year less.
+  const tv = valid ? fcfT / (w - a.tg) : null, pvTv = valid ? tv! / (1 + w) ** (a.mid ? N - 0.5 : N) : null;
   const ev = valid ? pvSum + pvTv! : null, eqv = valid ? ev! - L.netDebt : null;
   // Shareholders cannot be worth less than zero: a negative equity value means the model is not meaningful.
   const nm = valid && eqv! <= 0, ps = valid && !nm ? eqv! / co.shares : null;
@@ -85,7 +86,7 @@ export function residualIncome(co: Co, a: Assumptions): any {
     bv = bv1;
   }
   const last = rows[N - 1], valid = ke > a.tg + 0.001;
-  const tv = valid ? (last.ri * (1 + a.tg)) / (ke - a.tg) : null, pvTv = valid ? tv! / (1 + ke) ** N : null;
+  const tv = valid ? (last.ri * (1 + a.tg)) / (ke - a.tg) : null, pvTv = valid ? tv! / (1 + ke) ** (a.mid ? N - 0.5 : N) : null;
   const eqv = valid ? L.eq + pvSum + pvTv! : null, nm = valid && eqv! <= 0, ps = valid && !nm ? eqv! / co.shares : null;
   return { kind: "ri", w: ke, rows, pvSum, tv, pvTv, ev: null, eqv, ps, nm, up: ok(ps) && co.price ? ps / co.price - 1 : null, tvShare: valid ? pvTv! / (eqv! - L.eq || 1) : null, impliedPB: valid ? eqv! / L.eq : null, valid, N, finalRoe: last.roe };
 }
