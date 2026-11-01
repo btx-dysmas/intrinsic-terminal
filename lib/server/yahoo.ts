@@ -32,19 +32,20 @@ async function quoteSummary(symbol: string, modules: string[]) {
   return null;
 }
 
-export type History = { dates: string[]; rows: Record<string, (number | null)[]>; divs: [string, number][]; meta: any };
+export type History = { dates: string[]; rows: Record<string, (number | null)[]>; divs: [string, number][]; splits: [string, number][]; meta: any };
 
 /** Five years of daily OHLC, adjusted close and volume. */
 export function history(symbol: string): Promise<History | null> {
   return memo(`yf:chart:${symbol}`, 3 * HOUR, async () => {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5y&interval=1d&events=div`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5y&interval=1d&events=div,split`;
     const r = await fetch(url, { headers: { "User-Agent": UA }, cache: "no-store" });
     if (!r.ok) return null;
     const res = (await r.json()).chart?.result?.[0];
     if (!res?.timestamp) return null;
     const q = res.indicators.quote[0], adj = res.indicators.adjclose?.[0]?.adjclose ?? q.close;
     const divs = Object.values<any>(res.events?.dividends ?? {}).map((d) => [isoDay(d.date), d.amount] as [string, number]).sort();
-    return { dates: res.timestamp.map(isoDay), rows: { o: q.open, h: q.high, l: q.low, c: q.close, a: adj, v: q.volume }, divs, meta: res.meta };
+    const splits = Object.values<any>(res.events?.splits ?? {}).filter((s) => s.numerator > 0 && s.denominator > 0).map((s) => [isoDay(s.date), s.numerator / s.denominator] as [string, number]).sort();
+    return { dates: res.timestamp.map(isoDay), rows: { o: q.open, h: q.high, l: q.low, c: q.close, a: adj, v: q.volume }, divs, splits, meta: res.meta };
   });
 }
 
@@ -65,6 +66,7 @@ export async function aligned(symbol: string) {
     t: own ? { o: pick("o"), h: pick("h"), l: pick("l"), c: pick("c"), a: pick("a"), v: pick("v") } : null,
     bench: bench.rows.a.map(round),
     divs: own?.divs ?? [],
+    splits: own?.splits ?? [],
   };
 }
 

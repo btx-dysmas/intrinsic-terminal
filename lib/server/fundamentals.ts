@@ -149,6 +149,8 @@ export function buildFundamentals(e: { facts: Facts; sic?: unknown }) {
     for (const k of FLOW) o[k] = qs.every((q) => has(q[k])) ? qs.reduce((s, q) => s + q[k], 0) : null;
     if (o.ebitda == null && has(o.op) && has(o.da)) o.ebitda = o.op + o.da;
     o.dil = qs[3].dil;
+    // Fourth-quarter EPS is never filed on its own, so when a quarter is missing, LTM EPS is LTM net income over diluted shares.
+    if (o.eps == null && has(o.ni) && has(o.dil) && o.dil > 0) o.eps = o.ni / o.dil;
     o.opDerived = qs.some((q) => q.opDerived);
     return balance(o, qs[3].end);
   };
