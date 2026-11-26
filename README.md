@@ -51,7 +51,7 @@ The gap is real: I set the project aside, came back to it, and rebuilt it with a
 
 ## About me
 
-Hi, I'm **Noah Williams**. Online I go by **Dysmas Anastasiou**. I'm 18, and I built this by myself.
+I'm 18, and I built this by myself.
 
 My high school transcript doesn't tell the whole story. I left the group home system in 2022. For a long time after that I was dealing with depression, anxiety and symptoms close to schizophrenia, and my grades went down with me. I didn't want that transcript to be the last word on what I can do, so I decided to build real things and use them to earn a place at a university.
 
@@ -275,7 +275,12 @@ data/                universe.json (generated)
 
 Intrinsic is an educational project. Its models are quantitative screens, not investment advice.
 
-## Author
+## Related projects
 
-**Noah Williams** (Dysmas Anastasiou)
-Email: noah.w.williams@protonmail.com
+- **[Family Office OS](https://github.com/btx-dysmas/family-office-os)** ([live](https://family-office-os-gamma.vercel.app)): a wealth management platform built around a family's investment policy statement.
+- **[Berkshire Simulator](https://github.com/btx-dysmas/berkshire-simulator)** ([live](https://berkshire-simulator.vercel.app)): Monte Carlo valuation fitted to each company's 10-K history, plus a model of Berkshire Hathaway's float and capital allocation.
+- **[Disclosure](https://github.com/btx-dysmas/disclosure)** ([live](https://disclosure-three.vercel.app)): an SEC filing research workstation for reading, searching and comparing filings.
+
+## Feedback
+
+Found a bug, or a number that doesn't match the filing it came from? [Open an issue](https://github.com/btx-dysmas/intrinsic-terminal/issues) with the page and the figure, and I'll trace it back to its source.
