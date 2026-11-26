@@ -51,7 +51,7 @@ The gap is real: I set the project aside, came back to it, and rebuilt it with a
 
 ## About me
 
-Hi, I'm **Dysmas Anastasiou**. I'm 18, and I built this by myself.
+Hi, I'm **Noah Williams**. Online I go by **Dysmas Anastasiou**. I'm 18, and I built this by myself.
 
 My high school transcript doesn't tell the whole story. I left the group home system in 2022. For a long time after that I was dealing with depression, anxiety and symptoms close to schizophrenia, and my grades went down with me. I didn't want that transcript to be the last word on what I can do, so I decided to build real things and use them to earn a place at a university.
 
@@ -277,5 +277,5 @@ Intrinsic is an educational project. Its models are quantitative screens, not in
 
 ## Author
 
-**Dysmas Anastasiou**
+**Noah Williams** (Dysmas Anastasiou)
 Email: noah.w.williams@protonmail.com
